@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+}
 
 android {
-    compileSdkVersion 29
-
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+    lintOptions {
+        disable 'MissingDefaultResource'
+    }
     defaultConfig {
-        applicationId 'com.zhihu.matisse.sample'
+        applicationId "com.dabenxiang.jys"
         minSdkVersion 14
         targetSdkVersion 29
         versionCode 1
@@ -31,6 +39,17 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    kapt {
+        correctErrorTypes = true
+    }
+    androidExtensions {
+        experimental = true
     }
 }
 

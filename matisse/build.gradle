@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-apply plugin: 'com.android.library'
-apply plugin: 'checkstyle'
+
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+    id 'checkstyle'
+}
 
 android {
     compileSdkVersion 29
     buildToolsVersion '29.0.2'
-
+    lintOptions {
+        abortOnError false
+    }
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 29
@@ -28,8 +36,16 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    lintOptions {
-        abortOnError false
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
+    kapt {
+        correctErrorTypes = true
+    }
+    androidExtensions {
+        experimental = true
     }
 }
 
