@@ -17,10 +17,10 @@ package com.zhihu.matisse.filter;
 
 import android.content.Context;
 
-import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.BaseSelectionCreator;
-import com.zhihu.matisse.internal.entity.Item;
+import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.internal.entity.IncapableCause;
+import com.zhihu.matisse.internal.entity.Item;
 
 import java.util.Set;
 
