@@ -16,5 +16,5 @@
   -->
 <resources>
     <string name="permission_request_denied">Permissão negada</string>
-    <string name="error_gif">o limite do tamanho de x ou y deve ser de pelo menos %1$dpx e o tamanho do arquivo não deve ser maior que %2$sM</string>
+
 </resources>

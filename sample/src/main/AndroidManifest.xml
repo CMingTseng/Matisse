@@ -15,15 +15,24 @@
   limitations under the License.
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.zhihu.matisse.sample">
+          package="com.dabenxiang.jys">
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+<!--        <activity-->
+<!--            android:name="com.dabenxiang.jys.SampleActivity"-->
+<!--            android:configChanges="orientation|screenSize|keyboardHidden">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN"/>-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
         <activity
-            android:name="com.zhihu.matisse.sample.SampleActivity"
+            android:name="com.dabenxiang.jys.view.main.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -33,7 +42,7 @@
         </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.zhihu.matisse.sample.fileprovider"
+            android:authorities="${applicationId}.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

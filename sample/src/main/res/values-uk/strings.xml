@@ -16,5 +16,5 @@
   -->
 <resources>
     <string name="permission_request_denied">Дозвіл не надано</string>
-    <string name="error_gif">Висота та ширина зображення повинна становити мінімум %1$dpx, а розмір файлу не повинен перевищувати %2$sM</string>
+
 </resources>
