@@ -1,1 +1,4 @@
-include ':sample', ':matisse'
+include ':sample'
+include ':matisse_core'
+include ':matisse_ui'
+include ':matisse'
