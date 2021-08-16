@@ -27,35 +27,29 @@ import com.zhihu.matisse.engine.ImageEngine;
  * {@link ImageEngine} implementation using Picasso.
  */
 
-public class PicassoEngine implements ImageEngine {
+ class PicassoEngine : ImageEngine {
 
-    @Override
-    public void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri) {
+    override fun supportAnimatedGif(): Boolean {
+        return false
+    }
+
+    override fun loadThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, uri: Uri) {
         Picasso.with(context).load(uri).placeholder(placeholder)
                 .resize(resize, resize)
                 .centerCrop()
-                .into(imageView);
+                .into(imageView)
     }
 
-    @Override
-    public void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView,
-                                 Uri uri) {
-        loadThumbnail(context, resize, placeholder, imageView, uri);
+    override fun loadGifThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, uri: Uri) {
+        loadThumbnail(context, resize, placeholder, imageView, uri)
     }
 
-    @Override
-    public void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
+    override fun loadImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri) {
         Picasso.with(context).load(uri).resize(resizeX, resizeY).priority(Picasso.Priority.HIGH)
-                .centerInside().into(imageView);
+                .centerInside().into(imageView)
     }
 
-    @Override
-    public void loadGifImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
-        loadImage(context, resizeX, resizeY, imageView, uri);
-    }
-
-    @Override
-    public boolean supportAnimatedGif() {
-        return false;
+    override fun loadGifImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri) {
+        loadImage(context, resizeX, resizeY, imageView, uri)
     }
 }

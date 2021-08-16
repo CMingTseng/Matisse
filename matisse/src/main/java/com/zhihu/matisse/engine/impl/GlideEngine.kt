@@ -15,73 +15,65 @@
  */
 package com.zhihu.matisse.engine.impl;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.widget.ImageView;
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.widget.ImageView
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.Priority;
-import com.bumptech.glide.request.RequestOptions;
-import com.zhihu.matisse.engine.ImageEngine;
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.request.RequestOptions
+import com.zhihu.matisse.engine.ImageEngine
 
 /**
  * {@link ImageEngine} implementation using Glide.
  */
 
-public class GlideEngine implements ImageEngine {
+class GlideEngine : ImageEngine {
+    override fun supportAnimatedGif(): Boolean {
+        return true
+    }
 
-    @Override
-    public void loadThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView, Uri uri) {
+    override fun loadThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, uri: Uri) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(uri)
-                .apply(new RequestOptions()
+                .apply(RequestOptions()
                         .override(resize, resize)
                         .placeholder(placeholder)
                         .centerCrop())
-                .into(imageView);
+                .into(imageView)
     }
 
-    @Override
-    public void loadGifThumbnail(Context context, int resize, Drawable placeholder, ImageView imageView,
-                                 Uri uri) {
+    override fun loadGifThumbnail(context: Context, resize: Int, placeholder: Drawable, imageView: ImageView, uri: Uri) {
         Glide.with(context)
                 .asBitmap() // some .jpeg files are actually gif
                 .load(uri)
-                .apply(new RequestOptions()
+                .apply(RequestOptions()
                         .override(resize, resize)
                         .placeholder(placeholder)
                         .centerCrop())
-                .into(imageView);
+                .into(imageView)
     }
 
-    @Override
-    public void loadImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
+    override fun loadImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri) {
         Glide.with(context)
                 .load(uri)
-                .apply(new RequestOptions()
+                .apply(RequestOptions()
                         .override(resizeX, resizeY)
                         .priority(Priority.HIGH)
                         .fitCenter())
-                .into(imageView);
+                .into(imageView)
     }
 
-    @Override
-    public void loadGifImage(Context context, int resizeX, int resizeY, ImageView imageView, Uri uri) {
+    override fun loadGifImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri) {
         Glide.with(context)
                 .asGif()
                 .load(uri)
-                .apply(new RequestOptions()
+                .apply(RequestOptions()
                         .override(resizeX, resizeY)
                         .priority(Priority.HIGH)
                         .fitCenter())
-                .into(imageView);
+                .into(imageView)
     }
-
-    @Override
-    public boolean supportAnimatedGif() {
-        return true;
-    }
-
 }

@@ -20,7 +20,7 @@ interface ImageEngine {
      * @param imageView   ImageView widget
      * @param uri         Uri of the loaded image
      */
-    fun loadThumbnail(context: Context?, resize: Int, placeholder: Drawable?, imageView: ImageView?, uri: Uri?)
+    fun loadThumbnail(context: Context , resize: Int, placeholder: Drawable , imageView: ImageView, uri: Uri )
 
     /**
      * Load thumbnail of a gif image resource. You don't have to load an animated gif when it's only
@@ -32,7 +32,7 @@ interface ImageEngine {
      * @param imageView   ImageView widget
      * @param uri         Uri of the loaded image
      */
-    fun loadGifThumbnail(context: Context?, resize: Int, placeholder: Drawable?, imageView: ImageView?, uri: Uri?)
+    fun loadGifThumbnail(context: Context , resize: Int, placeholder: Drawable , imageView: ImageView, uri: Uri )
 
     /**
      * Load a static image resource.
@@ -43,7 +43,7 @@ interface ImageEngine {
      * @param imageView ImageView widget
      * @param uri       Uri of the loaded image
      */
-    fun loadImage(context: Context?, resizeX: Int, resizeY: Int, imageView: ImageView?, uri: Uri?)
+    fun loadImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri )
 
     /**
      * Load a gif image resource.
@@ -54,7 +54,7 @@ interface ImageEngine {
      * @param imageView ImageView widget
      * @param uri       Uri of the loaded image
      */
-    fun loadGifImage(context: Context?, resizeX: Int, resizeY: Int, imageView: ImageView?, uri: Uri?)
+    fun loadGifImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, uri: Uri )
 
     /**
      * Whether this implementation supports animated gif.
