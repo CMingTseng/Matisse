@@ -17,7 +17,6 @@ package com.zhihu.matisse.internal.ui.widget;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -28,6 +27,8 @@ import android.widget.TextView;
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MediaGrid extends SquareFrameLayout implements View.OnClickListener {
 
@@ -111,10 +112,10 @@ public class MediaGrid extends SquareFrameLayout implements View.OnClickListener
 
     private void setImage() {
         if (mMedia.isGif()) {
-            SelectionSpec.getInstance().imageEngine.loadGifThumbnail(getContext(), mPreBindInfo.mResize,
+            SelectionSpec.getInstance().getImageEngine().loadGifThumbnail(getContext(), mPreBindInfo.mResize,
                     mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getContentUri());
         } else {
-            SelectionSpec.getInstance().imageEngine.loadThumbnail(getContext(), mPreBindInfo.mResize,
+            SelectionSpec.getInstance().getImageEngine().loadThumbnail(getContext(), mPreBindInfo.mResize,
                     mPreBindInfo.mPlaceholder, mThumbnail, mMedia.getContentUri());
         }
     }

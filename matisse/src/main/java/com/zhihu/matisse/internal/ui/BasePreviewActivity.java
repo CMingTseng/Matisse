@@ -19,10 +19,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -41,6 +37,11 @@ import com.zhihu.matisse.internal.ui.widget.IncapableDialog;
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
 import com.zhihu.matisse.internal.utils.Platform;
 import com.zhihu.matisse.listener.OnFragmentInteractionListener;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.viewpager.widget.ViewPager;
 
 public abstract class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
         ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
@@ -137,8 +138,8 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
                 }
                 updateApplyButton();
 
-                if (mSpec.onSelectedListener != null) {
-                    mSpec.onSelectedListener.onSelected(
+                if (mSpec.getOnSelectedListener() != null) {
+                    mSpec.getOnSelectedListener().onSelected(
                             mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());
                 }
             }
@@ -167,8 +168,8 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
                 }
 
 
-                if (mSpec.onCheckedListener != null) {
-                    mSpec.onCheckedListener.onCheck(mOriginalEnable);
+                if (mSpec.getOnCheckedListener() != null) {
+                    mSpec.getOnCheckedListener().onCheck(mOriginalEnable);
                 }
             }
         });

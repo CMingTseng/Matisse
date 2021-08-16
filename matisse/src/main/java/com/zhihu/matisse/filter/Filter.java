@@ -18,7 +18,6 @@ package com.zhihu.matisse.filter;
 import android.content.Context;
 
 import com.zhihu.matisse.MimeType;
-import com.zhihu.matisse.SelectionCreator;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.IncapableCause;
 
@@ -26,7 +25,7 @@ import java.util.Set;
 
 /**
  * Filter for choosing a {@link Item}. You can add multiple Filters through
- * {@link SelectionCreator#addFilter(Filter)}.
+ * {@link SelectionCreatorJ#addFilter(Filter)}.
  */
 @SuppressWarnings("unused")
 public abstract class Filter {

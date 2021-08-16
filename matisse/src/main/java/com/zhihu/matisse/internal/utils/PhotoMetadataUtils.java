@@ -31,16 +31,18 @@ import android.util.Log;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.filter.Filter;
+import com.zhihu.matisse.internal.entity.IncapableCause;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
-import com.zhihu.matisse.internal.entity.IncapableCause;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public final class PhotoMetadataUtils {
     private static final String TAG = PhotoMetadataUtils.class.getSimpleName();
@@ -129,8 +131,9 @@ public final class PhotoMetadataUtils {
             return new IncapableCause(context.getString(R.string.error_file_type));
         }
 
-        if (SelectionSpec.getInstance().filters != null) {
-            for (Filter filter : SelectionSpec.getInstance().filters) {
+        if (SelectionSpec.getInstance().getFilters() != null) {
+            List<Filter> filters = SelectionSpec.getInstance().getFilters();
+            for (Filter filter : filters) {
                 IncapableCause incapableCause = filter.filter(context, item);
                 if (incapableCause != null) {
                     return incapableCause;
@@ -146,7 +149,8 @@ public final class PhotoMetadataUtils {
         }
 
         ContentResolver resolver = context.getContentResolver();
-        for (MimeType type : SelectionSpec.getInstance().mimeTypeSet) {
+        Set<MimeType> mimeTypeSet = SelectionSpec.getInstance().getMimeTypeSet();
+        for (MimeType type : mimeTypeSet) {
             if (type.checkType(resolver, item.getContentUri())) {
                 return true;
             }

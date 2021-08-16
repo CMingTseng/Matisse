@@ -20,8 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +33,9 @@ import com.zhihu.matisse.listener.OnFragmentInteractionListener;
 
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 public class PreviewItemFragment extends Fragment {
 
@@ -95,10 +96,10 @@ public class PreviewItemFragment extends Fragment {
 
         Point size = PhotoMetadataUtils.getBitmapSize(item.getContentUri(), getActivity());
         if (item.isGif()) {
-            SelectionSpec.getInstance().imageEngine.loadGifImage(getContext(), size.x, size.y, image,
+            SelectionSpec.getInstance().getImageEngine().loadGifImage(getContext(), size.x, size.y, image,
                     item.getContentUri());
         } else {
-            SelectionSpec.getInstance().imageEngine.loadImage(getContext(), size.x, size.y, image,
+            SelectionSpec.getInstance().getImageEngine().loadImage(getContext(), size.x, size.y, image,
                     item.getContentUri());
         }
     }
