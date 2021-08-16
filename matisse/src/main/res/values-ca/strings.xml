@@ -32,4 +32,5 @@
     <string name="error_file_type">Tipus d\'arxiu no permés</string>
     <string name="error_type_conflict">No es poden seleccionar imatges i vídeos al mateix temps</string>
     <string name="error_no_video_activity">No s\'ha trobat cap app que suporti la previsualització de vídeo</string>
+    <string name="error_gif">x or y ha de ser almenys %1$dpx i el tamany de l\'arxiu no ha de ser major que %2$sM</string>
 </resources>

@@ -39,4 +39,11 @@
     <string name="button_original">Original</string>
     <string name="button_sure_default">Sure</string>
     <string name="button_sure">Sure(%1$d)</string>
+    <string name="error_gif">x or y bound size should be at least %1$dpx and file size should be no more than %2$sM</string>
+    <plurals name="error_over_count">
+        <item quantity="one">您可以選擇不超過 %1$d 個文件</item>
+        <item quantity="few">您最多可以選擇 %1$d 個文件</item>
+        <item quantity="many">您最多可以選擇 %1$d 個文件</item>
+        <item quantity="other">您最多可以選擇 %1$d 個文件</item>
+    </plurals>
 </resources>

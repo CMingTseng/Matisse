@@ -18,8 +18,6 @@ package com.zhihu.matisse.internal.entity;
 
 import android.content.pm.ActivityInfo;
 
-import androidx.annotation.StyleRes;
-
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.R;
 import com.zhihu.matisse.engine.ImageEngine;
@@ -30,6 +28,8 @@ import com.zhihu.matisse.listener.OnSelectedListener;
 
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.StyleRes;
 
 public final class SelectionSpec {
 

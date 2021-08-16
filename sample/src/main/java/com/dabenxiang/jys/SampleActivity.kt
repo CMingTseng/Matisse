@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.tbruyelle.rxpermissions2.RxPermissions
-import com.zhihu.matisse.BaseMatisse
+
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.engine.impl.GlideEngine

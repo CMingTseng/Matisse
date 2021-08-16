@@ -15,4 +15,5 @@
   <string name="error_under_quality">화질이 너무 낮습니다.</string>
   <string name="error_over_quality">화질이 너무 높습니다.</string>
   <string name="error_file_type">지원되지 않는 파일 유형입니다.</string>
+  <string name="error_gif">x 나 y의 크기는 %1$dpx 이상, 파일 크기는 %2$sM 이하여야 합니다.</string>
 </resources>

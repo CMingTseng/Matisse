@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.dabenxiang.jys.R
 import com.dabenxiang.jys.REQUEST_CODE_CHOOSE
 import com.dabenxiang.jys.view.exchange.chat.ChatContentFragment
-import com.zhihu.matisse.BaseMatisse
 import com.zhihu.matisse.Matisse
 
 class MainActivity : AppCompatActivity() {

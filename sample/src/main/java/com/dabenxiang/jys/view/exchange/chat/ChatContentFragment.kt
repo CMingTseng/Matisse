@@ -15,7 +15,6 @@ import com.dabenxiang.jys.R
 import com.dabenxiang.jys.REQUEST_CODE_CHOOSE
 import com.dabenxiang.jys.UriAdapter
 import com.tbruyelle.rxpermissions2.RxPermissions
-import com.zhihu.matisse.BaseMatisse
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.engine.impl.GlideEngine
@@ -77,9 +76,7 @@ class ChatContentFragment : Fragment(), View.OnClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == AppCompatActivity.RESULT_OK) {
-            mAdapter!!.setData(BaseMatisse.obtainResult(data), BaseMatisse.obtainPathResult(data))
-            Log.e("Fragment OnActivityResult", Matisse.obtainOriginalState(data).toString())
+            mAdapter!!.setData(Matisse.obtainResult(data), Matisse.obtainPathResult(data))
         }
     }
-
 }

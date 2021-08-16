@@ -40,4 +40,5 @@
     <string name="button_original">Оригинал</string>
     <string name="button_sure">Применить(%1$d)</string>
     <string name="button_sure_default">Применить</string>
+    <string name="error_gif">Высота и ширина изображения должна составлять минимум %1$dpx, а размер файла не должен превышать %2$sM</string>
 </resources>
