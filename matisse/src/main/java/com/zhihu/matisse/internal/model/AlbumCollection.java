@@ -19,14 +19,15 @@ package com.zhihu.matisse.internal.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentActivity;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
 
 import com.zhihu.matisse.internal.loader.AlbumLoader;
 
 import java.lang.ref.WeakReference;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+//FIXME !! jow to convert LoaderManager.LoaderCallbacks<Cursor>  onCreateLoader must return non-null
 public class AlbumCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 1;
     private static final String STATE_CURRENT_SELECTION = "state_current_selection";
