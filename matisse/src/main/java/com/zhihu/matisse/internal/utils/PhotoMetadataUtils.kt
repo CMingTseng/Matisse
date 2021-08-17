@@ -174,37 +174,31 @@ class PhotoMetadataUtils {
             return java.lang.Float.valueOf(result)
         }
 
+
+        //https://github.com/aminography/CommonUtils/blob/master/library/src/main/java/com/aminography/commonutils/HumanizeUtils.kt
+
+        val String.formatAsFileSize: String
+            get() = toLong().formatAsFileSize
+
+        val Int.formatAsFileSize: String
+            get() = toLong().formatAsFileSize
+
+        val Long.formatAsFileSize: String
+            get() = log2(if (this != 0L) toDouble() else 1.0).toInt().div(10).let {
+                val precision = when (it) {
+                    0 -> 0; 1 -> 1; else -> 2
+                }
+                val prefix = arrayOf("", "K", "M", "G", "T", "P", "E", "Z", "Y")
+                String.format("%.${precision}f ${prefix[it]}B", toDouble() / 2.0.pow(it * 10.0))
+            }
+
         @JvmStatic
         fun sizeFormatter(size: Long): String {
-            val fileSize = size.toDouble()
-            return if (fileSize < 1024) {
-                fileSize.toString() + "B"
-            } else if (fileSize > 1024 && fileSize < 1024 * 1024) {
-                ((fileSize / 1024 * 100.0).roundToInt() / 100.0).toString() + "KB"
-            } else {
-                ((fileSize / (1024 * 1204) * 100.0).roundToInt() / 100.0).toString() + "MB"
-            }
+            return size.formatAsFileSize
         }
     }
 
     private fun PhotoMetadataUtils() {
         throw AssertionError("oops! the utility class is about to be instantiated...")
     }
-
-    //https://github.com/aminography/CommonUtils/blob/master/library/src/main/java/com/aminography/commonutils/HumanizeUtils.kt
-
-    val String.formatAsFileSize: String
-        get() = toLong().formatAsFileSize
-
-    val Int.formatAsFileSize: String
-        get() = toLong().formatAsFileSize
-
-    val Long.formatAsFileSize: String
-        get() = log2(if (this != 0L) toDouble() else 1.0).toInt().div(10).let {
-            val precision = when (it) {
-                0 -> 0; 1 -> 1; else -> 2
-            }
-            val prefix = arrayOf("", "K", "M", "G", "T", "P", "E", "Z", "Y")
-            String.format("%.${precision}f ${prefix[it]}B", toDouble() / 2.0.pow(it * 10.0))
-        }
 }
