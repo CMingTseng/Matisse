@@ -29,41 +29,45 @@ import java.util.Set;
  * {@link SelectionCreator#addFilter(Filter)}.
  */
 @SuppressWarnings("unused")
-public abstract class Filter {
-    /**
-     * Convenient constant for a minimum value.
-     */
-    public static final int MIN = 0;
-    /**
-     * Convenient constant for a maximum value.
-     */
-    public static final int MAX = Integer.MAX_VALUE;
-    /**
-     * Convenient constant for 1024.
-     */
-    public static final int K = 1024;
+abstract class Filter {
+    companion object {
+        /**
+         * Convenient constant for a minimum value.
+         */
+        const val MIN = 0
+
+        /**
+         * Convenient constant for a maximum value.
+         */
+        const val MAX = Int.MAX_VALUE
+
+        /**
+         * Convenient constant for 1024.
+         */
+        const val K = 1024
+    }
 
     /**
      * Against what mime types this filter applies.
      */
-    protected abstract Set<MimeType> constraintTypes();
+    protected abstract fun constraintTypes(): kotlin.collections.Set<MimeType>
 
     /**
      * Invoked for filtering each item.
      *
-     * @return null if selectable, {@link IncapableCause} if not selectable.
+     * @return null if selectable, [IncapableCause] if not selectable.
      */
-    public abstract IncapableCause filter(Context context, Item item);
+    abstract fun filter(context: Context, item: Item): IncapableCause?
 
     /**
-     * Whether an {@link Item} need filtering.
+     * Whether an [Item] need filtering.
      */
-    protected boolean needFiltering(Context context, Item item) {
-        for (MimeType type : constraintTypes()) {
-            if (type.checkType(context.getContentResolver(), item.getContentUri())) {
-                return true;
+    protected fun needFiltering(context: Context, item: Item): Boolean {
+        for (type in constraintTypes()) {
+            if (type.checkType(context.contentResolver, item.contentUri)) {
+                return true
             }
         }
-        return false;
+        return false
     }
 }
