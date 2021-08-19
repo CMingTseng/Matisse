@@ -43,20 +43,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.viewpager.widget.ViewPager;
 
-import static com.zhihu.matisse.ConstantKt.MATISSE_CHECK_STATE;
-import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_DEFAULT_BUNDLE;
-import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_APPLY;
-import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_BUNDLE;
-import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE;
+import static com.zhihu.matisse.ConstantKt.CHECK_STATE;
+import static com.zhihu.matisse.ConstantKt.EXTRA_DEFAULT_BUNDLE;
+import static com.zhihu.matisse.ConstantKt.EXTRA_RESULT_APPLY;
+import static com.zhihu.matisse.ConstantKt.EXTRA_RESULT_BUNDLE;
+import static com.zhihu.matisse.ConstantKt.EXTRA_RESULT_ORIGINAL_ENABLE;
+
 
 public abstract class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
         ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
 
-    public static final String EXTRA_DEFAULT_BUNDLE = MATISSE_EXTRA_DEFAULT_BUNDLE;
-    public static final String EXTRA_RESULT_BUNDLE = MATISSE_EXTRA_RESULT_BUNDLE;
-    public static final String EXTRA_RESULT_APPLY =  MATISSE_EXTRA_RESULT_APPLY;
-    public static final String EXTRA_RESULT_ORIGINAL_ENABLE = MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE;
-    public static final String CHECK_STATE = MATISSE_CHECK_STATE;
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected SelectionSpec mSpec;

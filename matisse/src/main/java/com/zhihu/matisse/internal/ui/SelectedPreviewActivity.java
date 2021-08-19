@@ -16,13 +16,16 @@
 package com.zhihu.matisse.internal.ui;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
 import com.zhihu.matisse.internal.model.SelectedItemCollection;
 
 import java.util.List;
+
+import androidx.annotation.Nullable;
+
+import static com.zhihu.matisse.ConstantKt.EXTRA_DEFAULT_BUNDLE;
 
 public class SelectedPreviewActivity extends BasePreviewActivity {
 

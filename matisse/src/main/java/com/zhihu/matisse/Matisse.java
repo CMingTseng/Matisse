@@ -18,14 +18,17 @@ package com.zhihu.matisse;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-import com.zhihu.matisse.ui.MatisseActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import static com.zhihu.matisse.ConstantKt.EXTRA_RESULT_ORIGINAL_ENABLE;
+import static com.zhihu.matisse.ConstantKt.EXTRA_RESULT_SELECTION;
+import static com.zhihu.matisse.ConstantKt.EXTRA_RESULT_SELECTION_PATH;
 
 /**
  * Entry for Matisse's media selection.
@@ -82,7 +85,7 @@ public final class Matisse {
      * @return User selected media' {@link Uri} list.
      */
     public static List<Uri> obtainResult(Intent data) {
-        return data.getParcelableArrayListExtra(MatisseActivity.EXTRA_RESULT_SELECTION);
+        return data.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION);
     }
 
     /**
@@ -93,7 +96,7 @@ public final class Matisse {
      * @return User selected media path list.
      */
     public static List<String> obtainPathResult(Intent data) {
-        return data.getStringArrayListExtra(MatisseActivity.EXTRA_RESULT_SELECTION_PATH);
+        return data.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH);
     }
 
     /**
@@ -104,7 +107,7 @@ public final class Matisse {
      * @return Whether use original photo
      */
     public static boolean obtainOriginalState(Intent data) {
-        return data.getBooleanExtra(MatisseActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
+        return data.getBooleanExtra(EXTRA_RESULT_ORIGINAL_ENABLE, false);
     }
 
     /**

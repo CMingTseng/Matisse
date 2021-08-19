@@ -17,7 +17,6 @@ package com.zhihu.matisse.internal.ui;
 
 import android.database.Cursor;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 
 import com.zhihu.matisse.internal.entity.Album;
 import com.zhihu.matisse.internal.entity.Item;
@@ -28,12 +27,12 @@ import com.zhihu.matisse.internal.ui.adapter.PreviewPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlbumPreviewActivity extends BasePreviewActivity implements
-        AlbumMediaCollection.AlbumMediaCallbacks {
+import androidx.annotation.Nullable;
 
-    public static final String EXTRA_ALBUM = "extra_album";
-    public static final String EXTRA_ITEM = "extra_item";
+import static com.zhihu.matisse.ConstantKt.EXTRA_ALBUM;
+import static com.zhihu.matisse.ConstantKt.EXTRA_ITEM;
 
+public class AlbumPreviewActivity extends BasePreviewActivity implements AlbumMediaCollection.AlbumMediaCallbacks {
     private AlbumMediaCollection mCollection = new AlbumMediaCollection();
 
     private boolean mIsAlreadySetPosition;
@@ -71,8 +70,6 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements
         while (cursor.moveToNext()) {
             items.add(Item.valueOf(cursor));
         }
-//        cursor.close();
-
         if (items.isEmpty()) {
             return;
         }

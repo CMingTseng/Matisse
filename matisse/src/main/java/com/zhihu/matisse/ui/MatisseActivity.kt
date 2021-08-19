@@ -57,19 +57,7 @@ import java.util.*
  * and also support media selecting operations.
  */
 class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnItemSelectedListener, MediaSelectionFragment.SelectionProvider, View.OnClickListener, AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener, AlbumMediaAdapter.OnPhotoCapture {
-    companion object {
-        @JvmField
-        val EXTRA_RESULT_SELECTION: String = MATISSE_EXTRA_RESULT_SELECTION
 
-        @JvmField
-        val EXTRA_RESULT_SELECTION_PATH: String = MATISSE_EXTRA_RESULT_SELECTION_PATH
-
-        @JvmField
-        val EXTRA_RESULT_ORIGINAL_ENABLE: String = MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE
-        private val REQUEST_CODE_PREVIEW: Int = MATISSE_REQUEST_CODE_PREVIEW
-        private val REQUEST_CODE_CAPTURE: Int = MATISSE_REQUEST_CODE_CAPTURE
-        val CHECK_STATE: String = MATISSE_CHECK_STATE
-    }
 
     private val mAlbumCollection = AlbumCollection()
     private var mMediaStoreCompat: MediaStoreCompat? = null
@@ -164,12 +152,12 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
         if (resultCode != RESULT_OK) return
         if (requestCode == REQUEST_CODE_PREVIEW) {
             data?.let { intent ->
-                intent.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE)?.let { resultBundle ->
+                intent.getBundleExtra(EXTRA_RESULT_BUNDLE)?.let { resultBundle ->
                     val selected: ArrayList<Item>? = resultBundle.getParcelableArrayList<Item>(SelectedItemCollection.STATE_SELECTION)
-                    mOriginalEnable = data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+                    mOriginalEnable = data.getBooleanExtra(EXTRA_RESULT_ORIGINAL_ENABLE, false)
                     val collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
                             SelectedItemCollection.COLLECTION_UNDEFINED)
-                    if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                    if (data.getBooleanExtra(EXTRA_RESULT_APPLY, false)) {
                         val result = Intent()
                         val selectedUris = ArrayList<Uri>()
                         val selectedPaths = ArrayList<String?>()
@@ -273,8 +261,8 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
     override fun onClick(v: View) {
         if (v.id == R.id.button_preview) {
             val intent = Intent(this, SelectedPreviewActivity::class.java)
-            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.dataWithBundle)
-            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
+            intent.putExtra(EXTRA_DEFAULT_BUNDLE, mSelectedCollection.dataWithBundle)
+            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
             startActivityForResult(intent, REQUEST_CODE_PREVIEW)
         } else if (v.id == R.id.button_apply) {
             val result = Intent()
@@ -359,10 +347,10 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
 
     override fun onMediaClick(album: Album, item: Item, adapterPosition: Int) {
         val intent = Intent(this, AlbumPreviewActivity::class.java)
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album)
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item)
-        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.dataWithBundle)
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
+        intent.putExtra(EXTRA_ALBUM, album)
+        intent.putExtra(EXTRA_ITEM, item)
+        intent.putExtra(EXTRA_DEFAULT_BUNDLE, mSelectedCollection.dataWithBundle)
+        intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
         startActivityForResult(intent, REQUEST_CODE_PREVIEW)
     }
 
