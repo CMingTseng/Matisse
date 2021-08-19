@@ -19,10 +19,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -42,14 +38,25 @@ import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
 import com.zhihu.matisse.internal.utils.Platform;
 import com.zhihu.matisse.listener.OnFragmentInteractionListener;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.viewpager.widget.ViewPager;
+
+import static com.zhihu.matisse.ConstantKt.MATISSE_CHECK_STATE;
+import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_DEFAULT_BUNDLE;
+import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_APPLY;
+import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_BUNDLE;
+import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE;
+
 public abstract class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
         ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
 
-    public static final String EXTRA_DEFAULT_BUNDLE = "extra_default_bundle";
-    public static final String EXTRA_RESULT_BUNDLE = "extra_result_bundle";
-    public static final String EXTRA_RESULT_APPLY = "extra_result_apply";
-    public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
-    public static final String CHECK_STATE = "checkState";
+    public static final String EXTRA_DEFAULT_BUNDLE = MATISSE_EXTRA_DEFAULT_BUNDLE;
+    public static final String EXTRA_RESULT_BUNDLE = MATISSE_EXTRA_RESULT_BUNDLE;
+    public static final String EXTRA_RESULT_APPLY =  MATISSE_EXTRA_RESULT_APPLY;
+    public static final String EXTRA_RESULT_ORIGINAL_ENABLE = MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE;
+    public static final String CHECK_STATE = MATISSE_CHECK_STATE;
 
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected SelectionSpec mSpec;
