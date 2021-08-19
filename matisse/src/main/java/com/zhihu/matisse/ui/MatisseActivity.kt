@@ -13,432 +13,366 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhihu.matisse.ui;
+package com.zhihu.matisse.ui
 
-import android.app.Activity;
-import android.content.Intent;
-import android.content.res.TypedArray;
-import android.database.Cursor;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.zhihu.matisse.R;
-import com.zhihu.matisse.internal.entity.Album;
-import com.zhihu.matisse.internal.entity.Item;
-import com.zhihu.matisse.internal.entity.SelectionSpec;
-import com.zhihu.matisse.internal.model.AlbumCollection;
-import com.zhihu.matisse.internal.model.SelectedItemCollection;
-import com.zhihu.matisse.internal.ui.AlbumPreviewActivity;
-import com.zhihu.matisse.internal.ui.BasePreviewActivity;
-import com.zhihu.matisse.internal.ui.MediaSelectionFragment;
-import com.zhihu.matisse.internal.ui.SelectedPreviewActivity;
-import com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter;
-import com.zhihu.matisse.internal.ui.adapter.AlbumsAdapter;
-import com.zhihu.matisse.internal.ui.widget.AlbumsSpinner;
-import com.zhihu.matisse.internal.ui.widget.CheckRadioView;
-import com.zhihu.matisse.internal.ui.widget.IncapableDialog;
-import com.zhihu.matisse.internal.utils.MediaStoreCompat;
-import com.zhihu.matisse.internal.utils.PathUtils;
-import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
-import com.zhihu.matisse.internal.utils.SingleMediaScanner;
-
-import java.util.ArrayList;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-
-import static com.zhihu.matisse.ConstantKt.MATISSE_CHECK_STATE;
-import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE;
-import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_SELECTION;
-import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_SELECTION_PATH;
-import static com.zhihu.matisse.ConstantKt.MATISSE_REQUEST_CODE_CAPTURE;
-import static com.zhihu.matisse.ConstantKt.MATISSE_REQUEST_CODE_PREVIEW;
+import android.content.Intent
+import android.database.Cursor
+import android.graphics.PorterDuff
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.zhihu.matisse.*
+import com.zhihu.matisse.internal.entity.Album
+import com.zhihu.matisse.internal.entity.Item
+import com.zhihu.matisse.internal.entity.SelectionSpec
+import com.zhihu.matisse.internal.model.AlbumCollection
+import com.zhihu.matisse.internal.model.SelectedItemCollection
+import com.zhihu.matisse.internal.ui.AlbumPreviewActivity
+import com.zhihu.matisse.internal.ui.BasePreviewActivity
+import com.zhihu.matisse.internal.ui.MediaSelectionFragment
+import com.zhihu.matisse.internal.ui.SelectedPreviewActivity
+import com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter
+import com.zhihu.matisse.internal.ui.adapter.AlbumsAdapter
+import com.zhihu.matisse.internal.ui.widget.AlbumsSpinner
+import com.zhihu.matisse.internal.ui.widget.IncapableDialog
+import com.zhihu.matisse.internal.utils.MediaStoreCompat
+import com.zhihu.matisse.internal.utils.PathUtils.Companion.getPath
+import com.zhihu.matisse.internal.utils.PhotoMetadataUtils.Companion.getSizeInMB
+import com.zhihu.matisse.internal.utils.SingleMediaScanner
+import kotlinx.android.synthetic.main.activity_matisse.*
+import java.util.*
 
 /**
  * Main Activity to display albums and media content (images/videos) in each album
  * and also support media selecting operations.
  */
-public class MatisseActivity extends AppCompatActivity implements
-        AlbumCollection.AlbumCallbacks, AdapterView.OnItemSelectedListener,
-        MediaSelectionFragment.SelectionProvider, View.OnClickListener,
-        AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener,
-        AlbumMediaAdapter.OnPhotoCapture {
+class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnItemSelectedListener, MediaSelectionFragment.SelectionProvider, View.OnClickListener, AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener, AlbumMediaAdapter.OnPhotoCapture {
+    companion object {
+        @JvmField
+        val EXTRA_RESULT_SELECTION: String = MATISSE_EXTRA_RESULT_SELECTION
 
-    public static final String EXTRA_RESULT_SELECTION = MATISSE_EXTRA_RESULT_SELECTION;
-    public static final String EXTRA_RESULT_SELECTION_PATH = MATISSE_EXTRA_RESULT_SELECTION_PATH;
-    public static final String EXTRA_RESULT_ORIGINAL_ENABLE = MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE;
-    private static final int REQUEST_CODE_PREVIEW = MATISSE_REQUEST_CODE_PREVIEW;
-    private static final int REQUEST_CODE_CAPTURE = MATISSE_REQUEST_CODE_CAPTURE;
-    public static final String CHECK_STATE = MATISSE_CHECK_STATE;
-    private final AlbumCollection mAlbumCollection = new AlbumCollection();
-    private MediaStoreCompat mMediaStoreCompat;
-    private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
-    private SelectionSpec mSpec;
+        @JvmField
+        val EXTRA_RESULT_SELECTION_PATH: String = MATISSE_EXTRA_RESULT_SELECTION_PATH
 
-    private AlbumsSpinner mAlbumsSpinner;
-    private AlbumsAdapter mAlbumsAdapter;
-    private TextView mButtonPreview;
-    private TextView mButtonApply;
-    private View mContainer;
-    private View mEmptyView;
+        @JvmField
+        val EXTRA_RESULT_ORIGINAL_ENABLE: String = MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE
+        private val REQUEST_CODE_PREVIEW: Int = MATISSE_REQUEST_CODE_PREVIEW
+        private val REQUEST_CODE_CAPTURE: Int = MATISSE_REQUEST_CODE_CAPTURE
+        val CHECK_STATE: String = MATISSE_CHECK_STATE
+    }
 
-    private LinearLayout mOriginalLayout;
-    private CheckRadioView mOriginal;
-    private boolean mOriginalEnable;
+    private val mAlbumCollection = AlbumCollection()
+    private var mMediaStoreCompat: MediaStoreCompat? = null
+    private val mSelectedCollection = SelectedItemCollection(this)
+    private var mSpec: SelectionSpec? = null
+    private var mAlbumsSpinner: AlbumsSpinner? = null
+    private var mAlbumsAdapter: AlbumsAdapter? = null
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    private var mOriginalEnable = false
+    override fun onCreate(savedInstanceState: Bundle?) {
         // programmatically set theme before super.onCreate()
-        mSpec = SelectionSpec.getInstance();
-        setTheme(mSpec.themeId);
-        super.onCreate(savedInstanceState);
-        if (!mSpec.hasInited) {
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
+        mSpec = SelectionSpec.getInstance()
+        mSpec?.let {
+            setTheme(it.themeId)
+            super.onCreate(savedInstanceState)
+            if (!it.hasInited) {
+                setResult(RESULT_CANCELED)
+                finish()
+                return
+            }
+            setContentView(R.layout.activity_matisse)
+            if (it.needOrientationRestriction()) {
+                requestedOrientation = it.orientation
+            }
+            if (it.capture) {
+                mMediaStoreCompat = MediaStoreCompat(this)
+                if (it.captureStrategy == null) throw RuntimeException("Don't forget to set CaptureStrategy.")
+                mMediaStoreCompat!!.setCaptureStrategy(it.captureStrategy)
+            }
+            setSupportActionBar(toolbar)
+            val actionBar = supportActionBar
+            actionBar!!.setDisplayShowTitleEnabled(false)
+            actionBar.setDisplayHomeAsUpEnabled(true)
+            val navigationIcon = toolbar.navigationIcon
+            val ta = theme.obtainStyledAttributes(intArrayOf(R.attr.album_element_color))
+            val color = ta.getColor(0, 0)
+            ta.recycle()
+            navigationIcon!!.setColorFilter(color, PorterDuff.Mode.SRC_IN)
+            button_preview!!.setOnClickListener(this)
+            button_apply!!.setOnClickListener(this)
+            originalLayout.setOnClickListener(this)
+            mSelectedCollection.onCreate(savedInstanceState)
+            if (savedInstanceState != null) {
+                mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE)
+            }
+            updateBottomToolbar()
+            mAlbumsAdapter = AlbumsAdapter(this, null, false)
+            mAlbumsSpinner = AlbumsSpinner(this)
+            mAlbumsSpinner!!.setOnItemSelectedListener(this)
+            mAlbumsSpinner!!.setSelectedTextView(findViewById<View>(R.id.selected_album) as TextView)
+            mAlbumsSpinner!!.setPopupAnchorView(findViewById(R.id.toolbar))
+            mAlbumsSpinner!!.setAdapter(mAlbumsAdapter)
+            mAlbumCollection.onCreate(this, this)
+            mAlbumCollection.onRestoreInstanceState(savedInstanceState)
+            mAlbumCollection.loadAlbums()
+        } ?: run {
+            setResult(RESULT_CANCELED)
+            finish()
+            return
         }
-        setContentView(R.layout.activity_matisse);
-
-        if (mSpec.needOrientationRestriction()) {
-            setRequestedOrientation(mSpec.orientation);
-        }
-
-        if (mSpec.capture) {
-            mMediaStoreCompat = new MediaStoreCompat(this);
-            if (mSpec.captureStrategy == null)
-                throw new RuntimeException("Don't forget to set CaptureStrategy.");
-            mMediaStoreCompat.setCaptureStrategy(mSpec.captureStrategy);
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        Drawable navigationIcon = toolbar.getNavigationIcon();
-        TypedArray ta = getTheme().obtainStyledAttributes(new int[]{R.attr.album_element_color});
-        int color = ta.getColor(0, 0);
-        ta.recycle();
-        navigationIcon.setColorFilter(color, PorterDuff.Mode.SRC_IN);
-
-        mButtonPreview = (TextView) findViewById(R.id.button_preview);
-        mButtonApply = (TextView) findViewById(R.id.button_apply);
-        mButtonPreview.setOnClickListener(this);
-        mButtonApply.setOnClickListener(this);
-        mContainer = findViewById(R.id.container);
-        mEmptyView = findViewById(R.id.empty_view);
-        mOriginalLayout = findViewById(R.id.originalLayout);
-        mOriginal = findViewById(R.id.original);
-        mOriginalLayout.setOnClickListener(this);
-
-        mSelectedCollection.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
-        }
-        updateBottomToolbar();
-
-        mAlbumsAdapter = new AlbumsAdapter(this, null, false);
-        mAlbumsSpinner = new AlbumsSpinner(this);
-        mAlbumsSpinner.setOnItemSelectedListener(this);
-        mAlbumsSpinner.setSelectedTextView((TextView) findViewById(R.id.selected_album));
-        mAlbumsSpinner.setPopupAnchorView(findViewById(R.id.toolbar));
-        mAlbumsSpinner.setAdapter(mAlbumsAdapter);
-        mAlbumCollection.onCreate(this, this);
-        mAlbumCollection.onRestoreInstanceState(savedInstanceState);
-        mAlbumCollection.loadAlbums();
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mSelectedCollection.onSaveInstanceState(outState);
-        mAlbumCollection.onSaveInstanceState(outState);
-        outState.putBoolean("checkState", mOriginalEnable);
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mSelectedCollection.onSaveInstanceState(outState)
+        mAlbumCollection.onSaveInstanceState(outState)
+        outState.putBoolean("checkState", mOriginalEnable)
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mAlbumCollection.onDestroy();
-        mSpec.onCheckedListener = null;
-        mSpec.onSelectedListener = null;
+    override fun onDestroy() {
+        super.onDestroy()
+        mAlbumCollection.onDestroy()
+        mSpec!!.onCheckedListener = null
+        mSpec!!.onSelectedListener = null
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            onBackPressed()
+            return true
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-    @Override
-    public void onBackPressed() {
-        setResult(Activity.RESULT_CANCELED);
-        super.onBackPressed();
+    override fun onBackPressed() {
+        setResult(RESULT_CANCELED)
+        super.onBackPressed()
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_OK)
-            return;
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != RESULT_OK) return
         if (requestCode == REQUEST_CODE_PREVIEW) {
-            Bundle resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE);
-            ArrayList<Item> selected = resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-            mOriginalEnable = data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false);
-            int collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
-                    SelectedItemCollection.COLLECTION_UNDEFINED);
-            if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
-                Intent result = new Intent();
-                ArrayList<Uri> selectedUris = new ArrayList<>();
-                ArrayList<String> selectedPaths = new ArrayList<>();
-                if (selected != null) {
-                    for (Item item : selected) {
-                        selectedUris.add(item.getContentUri());
-                        selectedPaths.add(PathUtils.getPath(this, item.getContentUri()));
+            data?.let { intent ->
+                intent.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE)?.let { resultBundle ->
+                    val selected: ArrayList<Item>? = resultBundle.getParcelableArrayList<Item>(SelectedItemCollection.STATE_SELECTION)
+                    mOriginalEnable = data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+                    val collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
+                            SelectedItemCollection.COLLECTION_UNDEFINED)
+                    if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+                        val result = Intent()
+                        val selectedUris = ArrayList<Uri>()
+                        val selectedPaths = ArrayList<String?>()
+                        selected?.let { items ->
+                            for (item in items) {
+                                selectedUris.add(item.contentUri)
+                                selectedPaths.add(getPath(this, item.contentUri))
+                            }
+                        }
+                        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris)
+                        result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths)
+                        result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
+                        setResult(RESULT_OK, result)
+                        finish()
+                    } else {
+                        mSelectedCollection.overwrite(selected, collectionType)
+                        val mediaSelectionFragment = supportFragmentManager.findFragmentByTag(
+                                MediaSelectionFragment::class.java.simpleName)
+                        if (mediaSelectionFragment is MediaSelectionFragment) {
+                            mediaSelectionFragment.refreshMediaGrid()
+                        }
+                        updateBottomToolbar()
                     }
                 }
-                result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
-                result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
-                result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-                setResult(RESULT_OK, result);
-                finish();
-            } else {
-                mSelectedCollection.overwrite(selected, collectionType);
-                Fragment mediaSelectionFragment = getSupportFragmentManager().findFragmentByTag(
-                        MediaSelectionFragment.class.getSimpleName());
-                if (mediaSelectionFragment instanceof MediaSelectionFragment) {
-                    ((MediaSelectionFragment) mediaSelectionFragment).refreshMediaGrid();
-                }
-                updateBottomToolbar();
             }
         } else if (requestCode == REQUEST_CODE_CAPTURE) {
             // Just pass the data back to previous calling Activity.
-            Uri contentUri = mMediaStoreCompat.getCurrentPhotoUri();
-            String path = mMediaStoreCompat.getCurrentPhotoPath();
-            ArrayList<Uri> selected = new ArrayList<>();
-            selected.add(contentUri);
-            ArrayList<String> selectedPath = new ArrayList<>();
-            selectedPath.add(path);
-            Intent result = new Intent();
-            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selected);
-            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPath);
-            setResult(RESULT_OK, result);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
-                MatisseActivity.this.revokeUriPermission(contentUri,
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
-            new SingleMediaScanner(this.getApplicationContext(), path, new SingleMediaScanner.ScanListener() {
-                @Override public void onScanFinish() {
-                    Log.i("SingleMediaScanner", "scan finish!");
+            val contentUri = mMediaStoreCompat!!.currentPhotoUri
+            val path = mMediaStoreCompat!!.currentPhotoPath
+            val selected = ArrayList<Uri>()
+            selected.add(contentUri)
+            val selectedPath = ArrayList<String>()
+            selectedPath.add(path)
+            val result = Intent()
+            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selected)
+            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPath)
+            setResult(RESULT_OK, result)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) this@MatisseActivity.revokeUriPermission(contentUri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            SingleMediaScanner(this.applicationContext, path, object : SingleMediaScanner.ScanListener {
+                override fun onScanFinish() {
+                    Log.i("SingleMediaScanner", "scan finish!")
                 }
-            });
-            finish();
+            })
+            finish()
         }
     }
 
-    private void updateBottomToolbar() {
-
-        int selectedCount = mSelectedCollection.count();
+    private fun updateBottomToolbar() {
+        val selectedCount = mSelectedCollection.count()
         if (selectedCount == 0) {
-            mButtonPreview.setEnabled(false);
-            mButtonApply.setEnabled(false);
-            mButtonApply.setText(getString(R.string.button_apply_default));
-        } else if (selectedCount == 1 && mSpec.singleSelectionModeEnabled()) {
-            mButtonPreview.setEnabled(true);
-            mButtonApply.setText(R.string.button_apply_default);
-            mButtonApply.setEnabled(true);
+            button_preview!!.isEnabled = false
+            button_apply!!.isEnabled = false
+            button_apply!!.text = getString(R.string.button_apply_default)
+        } else if (selectedCount == 1 && mSpec!!.singleSelectionModeEnabled()) {
+            button_preview!!.isEnabled = true
+            button_apply!!.setText(R.string.button_apply_default)
+            button_apply!!.isEnabled = true
         } else {
-            mButtonPreview.setEnabled(true);
-            mButtonApply.setEnabled(true);
-            mButtonApply.setText(getString(R.string.button_apply, selectedCount));
+            button_preview!!.isEnabled = true
+            button_apply!!.isEnabled = true
+            button_apply!!.text = getString(R.string.button_apply, selectedCount)
         }
-
-
-        if (mSpec.originalable) {
-            mOriginalLayout.setVisibility(View.VISIBLE);
-            updateOriginalState();
+        if (mSpec!!.originalable) {
+            originalLayout!!.visibility = View.VISIBLE
+            updateOriginalState()
         } else {
-            mOriginalLayout.setVisibility(View.INVISIBLE);
+            originalLayout!!.visibility = View.INVISIBLE
         }
-
-
     }
 
-
-    private void updateOriginalState() {
-        mOriginal.setChecked(mOriginalEnable);
+    private fun updateOriginalState() {
+        original!!.setChecked(mOriginalEnable)
         if (countOverMaxSize() > 0) {
-
             if (mOriginalEnable) {
-                IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.error_over_original_size, mSpec.originalMaxSize));
-                incapableDialog.show(getSupportFragmentManager(),
-                        IncapableDialog.class.getName());
-
-                mOriginal.setChecked(false);
-                mOriginalEnable = false;
+                val incapableDialog = IncapableDialog.newInstance("",
+                        getString(R.string.error_over_original_size, mSpec!!.originalMaxSize))
+                incapableDialog.show(supportFragmentManager,
+                        IncapableDialog::class.java.name)
+                original!!.setChecked(false)
+                mOriginalEnable = false
             }
         }
     }
 
-
-    private int countOverMaxSize() {
-        int count = 0;
-        int selectedCount = mSelectedCollection.count();
-        for (int i = 0; i < selectedCount; i++) {
-            Item item = mSelectedCollection.asList().get(i);
-
-            if (item.isImage()) {
-                float size = PhotoMetadataUtils.getSizeInMB(item.size);
-                if (size > mSpec.originalMaxSize) {
-                    count++;
+    private fun countOverMaxSize(): Int {
+        var count = 0
+        val selectedCount = mSelectedCollection.count()
+        for (i in 0 until selectedCount) {
+            val item = mSelectedCollection.asList()[i]
+            if (item.isImage) {
+                val size = getSizeInMB(item.size)
+                if (size > mSpec!!.originalMaxSize) {
+                    count++
                 }
             }
         }
-        return count;
+        return count
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.button_preview) {
-            Intent intent = new Intent(this, SelectedPreviewActivity.class);
-            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            startActivityForResult(intent, REQUEST_CODE_PREVIEW);
-        } else if (v.getId() == R.id.button_apply) {
-            Intent result = new Intent();
-            ArrayList<Uri> selectedUris = (ArrayList<Uri>) mSelectedCollection.asListOfUri();
-            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris);
-            ArrayList<String> selectedPaths = (ArrayList<String>) mSelectedCollection.asListOfString();
-            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths);
-            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-            setResult(RESULT_OK, result);
-            finish();
-        } else if (v.getId() == R.id.originalLayout) {
-            int count = countOverMaxSize();
+    override fun onClick(v: View) {
+        if (v.id == R.id.button_preview) {
+            val intent = Intent(this, SelectedPreviewActivity::class.java)
+            intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.dataWithBundle)
+            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
+            startActivityForResult(intent, REQUEST_CODE_PREVIEW)
+        } else if (v.id == R.id.button_apply) {
+            val result = Intent()
+            val selectedUris = mSelectedCollection.asListOfUri() as ArrayList<Uri>
+            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris)
+            val selectedPaths = mSelectedCollection.asListOfString() as ArrayList<String>
+            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths)
+            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
+            setResult(RESULT_OK, result)
+            finish()
+        } else if (v.id == R.id.originalLayout) {
+            val count = countOverMaxSize()
             if (count > 0) {
-                IncapableDialog incapableDialog = IncapableDialog.newInstance("",
-                        getString(R.string.error_over_original_count, count, mSpec.originalMaxSize));
-                incapableDialog.show(getSupportFragmentManager(),
-                        IncapableDialog.class.getName());
-                return;
+                val incapableDialog = IncapableDialog.newInstance("",
+                        getString(R.string.error_over_original_count, count, mSpec!!.originalMaxSize))
+                incapableDialog.show(supportFragmentManager,
+                        IncapableDialog::class.java.name)
+                return
             }
-
-            mOriginalEnable = !mOriginalEnable;
-            mOriginal.setChecked(mOriginalEnable);
-
-            if (mSpec.onCheckedListener != null) {
-                mSpec.onCheckedListener.onCheck(mOriginalEnable);
+            mOriginalEnable = !mOriginalEnable
+            original!!.setChecked(mOriginalEnable)
+            if (mSpec!!.onCheckedListener != null) {
+                mSpec!!.onCheckedListener.onCheck(mOriginalEnable)
             }
         }
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        mAlbumCollection.setStateCurrentSelection(position);
-        mAlbumsAdapter.getCursor().moveToPosition(position);
-        Album album = Album.valueOf(mAlbumsAdapter.getCursor());
-        if (album.isAll() && SelectionSpec.getInstance().capture) {
-            album.addCaptureCount();
+    override fun onItemSelected(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
+        mAlbumCollection.setStateCurrentSelection(position)
+        mAlbumsAdapter!!.cursor.moveToPosition(position)
+        val album = Album.valueOf(mAlbumsAdapter!!.cursor)
+        if (album.isAll && SelectionSpec.getInstance().capture) {
+            album.addCaptureCount()
         }
-        onAlbumSelected(album);
+        onAlbumSelected(album)
     }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
-
-    @Override
-    public void onAlbumLoad(final Cursor cursor) {
-        mAlbumsAdapter.swapCursor(cursor);
+    override fun onNothingSelected(parent: AdapterView<*>?) {}
+    override fun onAlbumLoad(cursor: Cursor) {
+        mAlbumsAdapter!!.swapCursor(cursor)
         // select default album.
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                cursor.moveToPosition(mAlbumCollection.getCurrentSelection());
-                mAlbumsSpinner.setSelection(MatisseActivity.this,
-                        mAlbumCollection.getCurrentSelection());
-                Album album = Album.valueOf(cursor);
-                if (album.isAll() && SelectionSpec.getInstance().capture) {
-                    album.addCaptureCount();
-                }
-                onAlbumSelected(album);
+        val handler = Handler(Looper.getMainLooper())
+        handler.post {
+            cursor.moveToPosition(mAlbumCollection.currentSelection)
+            mAlbumsSpinner!!.setSelection(this@MatisseActivity,
+                    mAlbumCollection.currentSelection)
+            val album = Album.valueOf(cursor)
+            if (album.isAll && SelectionSpec.getInstance().capture) {
+                album.addCaptureCount()
             }
-        });
+            onAlbumSelected(album)
+        }
     }
 
-    @Override
-    public void onAlbumReset() {
-        mAlbumsAdapter.swapCursor(null);
+    override fun onAlbumReset() {
+        mAlbumsAdapter!!.swapCursor(null)
     }
 
-    private void onAlbumSelected(Album album) {
-        if (album.isAll() && album.isEmpty()) {
-            mContainer.setVisibility(View.GONE);
-            mEmptyView.setVisibility(View.VISIBLE);
+    private fun onAlbumSelected(album: Album) {
+        if (album.isAll && album.isEmpty) {
+            container!!.visibility = View.GONE
+            empty_view!!.visibility = View.VISIBLE
         } else {
-            mContainer.setVisibility(View.VISIBLE);
-            mEmptyView.setVisibility(View.GONE);
-            Fragment fragment = MediaSelectionFragment.newInstance(album);
-            getSupportFragmentManager()
+            container!!.visibility = View.VISIBLE
+            empty_view!!.visibility = View.GONE
+            val fragment: Fragment = MediaSelectionFragment.newInstance(album)
+            supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.container, fragment, MediaSelectionFragment.class.getSimpleName())
-                    .commitAllowingStateLoss();
+                    .replace(R.id.container, fragment, MediaSelectionFragment::class.java.simpleName)
+                    .commitAllowingStateLoss()
         }
     }
 
-    @Override
-    public void onUpdate() {
+    override fun onUpdate() {
         // notify bottom toolbar that check state changed.
-        updateBottomToolbar();
-
-        if (mSpec.onSelectedListener != null) {
-            mSpec.onSelectedListener.onSelected(
-                    mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString());
+        updateBottomToolbar()
+        if (mSpec!!.onSelectedListener != null) {
+            mSpec!!.onSelectedListener.onSelected(
+                    mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString())
         }
     }
 
-    @Override
-    public void onMediaClick(Album album, Item item, int adapterPosition) {
-        Intent intent = new Intent(this, AlbumPreviewActivity.class);
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album);
-        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item);
-        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.getDataWithBundle());
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable);
-        startActivityForResult(intent, REQUEST_CODE_PREVIEW);
+    override fun onMediaClick(album: Album, item: Item, adapterPosition: Int) {
+        val intent = Intent(this, AlbumPreviewActivity::class.java)
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album)
+        intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item)
+        intent.putExtra(BasePreviewActivity.EXTRA_DEFAULT_BUNDLE, mSelectedCollection.dataWithBundle)
+        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
+        startActivityForResult(intent, REQUEST_CODE_PREVIEW)
     }
 
-    @Override
-    public SelectedItemCollection provideSelectedItemCollection() {
-        return mSelectedCollection;
+    override fun provideSelectedItemCollection(): SelectedItemCollection {
+        return mSelectedCollection
     }
 
-    @Override
-    public void capture() {
+    override fun capture() {
         if (mMediaStoreCompat != null) {
-            mMediaStoreCompat.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE);
+            mMediaStoreCompat!!.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE)
         }
     }
-
 }
