@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
-//FIXME !! jow to convert LoaderManager.LoaderCallbacks<Cursor>  onCreateLoader must return non-null
+//FIXME !! now to convert LoaderManager.LoaderCallbacks<Cursor>  onCreateLoader must return non-null
 public class AlbumMediaCollection implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 2;
     private static final String ARGS_ALBUM = "args_album";

@@ -30,8 +30,8 @@ import android.util.Log
 
 import com.zhihu.matisse.R
 import com.zhihu.matisse.internal.entity.Item
-import com.zhihu.matisse.internal.entity.SelectionSpec
 import com.zhihu.matisse.internal.entity.IncapableCause
+import com.zhihu.matisse.internal.entity.SelectionSpec
 
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -41,7 +41,6 @@ import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.log2
 import kotlin.math.pow
-import kotlin.math.roundToInt
 
 class PhotoMetadataUtils {
     companion object {
@@ -127,8 +126,38 @@ class PhotoMetadataUtils {
             if (!isSelectableType(context, item)) {
                 return IncapableCause(context.getString(R.string.error_file_type))
             }
-            if (SelectionSpec.getInstance().filters != null) {
-                for (filter in SelectionSpec.getInstance().filters) {
+//            when (val filters = SelectionSpec.getInstance().filters) {
+//                null -> {
+//                    return null
+//
+//                }
+//                else -> {
+//                    for (filter in filters) {
+//                        val incapableCause = filter.filter(context, item)
+//                        if (incapableCause != null) {
+//                            return incapableCause
+//                        }
+//                    }
+//
+//                }
+//            }
+//            SelectionSpec.getInstance().filters?.let {filters->
+//                for (filter in filters) {
+//                    val incapableCause = filter.filter(context, item)
+//                    if (incapableCause != null) {
+//                        return incapableCause
+//                    }
+//                }
+//            } ?: run {
+//                return null
+//            }
+
+            if (!isSelectableType(context, item)) {
+                return IncapableCause(context.getString(R.string.error_file_type))
+            }
+            val filters=SelectionSpec.getInstance().filters
+            if (filters != null) {
+                for (filter in filters) {
                     val incapableCause = filter.filter(context, item)
                     if (incapableCause != null) {
                         return incapableCause
@@ -139,16 +168,31 @@ class PhotoMetadataUtils {
         }
 
         private fun isSelectableType(context: Context?, item: Item): Boolean {
-            if (context == null) {
+//            if (context == null) {
+//                return false
+//            }
+//            val resolver = context.contentResolver
+//            for (type in SelectionSpec.getInstance().mimeTypeSet) {
+//                if (type.checkType(resolver, item.contentUri)) {
+//                    return true
+//                }
+//            }
+//            return false
+            context?.let {
+                val resolver = context.contentResolver
+                SelectionSpec.getInstance().mimeTypeSet?.let { mimeTypeSet->
+                    for (type in mimeTypeSet) {
+                        if (type.checkType(resolver, item.contentUri)) {
+                            return true
+                        }
+                    }
+                }?: run {
+                    return false
+                }
+                return false
+            } ?: run {
                 return false
             }
-            val resolver = context.contentResolver
-            for (type in SelectionSpec.getInstance().mimeTypeSet) {
-                if (type.checkType(resolver, item.contentUri)) {
-                    return true
-                }
-            }
-            return false
         }
 
         private fun shouldRotate(resolver: ContentResolver, uri: Uri): Boolean {
