@@ -26,12 +26,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,9 +51,22 @@ import com.zhihu.matisse.internal.ui.widget.IncapableDialog;
 import com.zhihu.matisse.internal.utils.MediaStoreCompat;
 import com.zhihu.matisse.internal.utils.PathUtils;
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
-
 import com.zhihu.matisse.internal.utils.SingleMediaScanner;
+
 import java.util.ArrayList;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+
+import static com.zhihu.matisse.ConstantKt.MATISSE_CHECK_STATE;
+import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE;
+import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_SELECTION;
+import static com.zhihu.matisse.ConstantKt.MATISSE_EXTRA_RESULT_SELECTION_PATH;
+import static com.zhihu.matisse.ConstantKt.MATISSE_REQUEST_CODE_CAPTURE;
+import static com.zhihu.matisse.ConstantKt.MATISSE_REQUEST_CODE_PREVIEW;
 
 /**
  * Main Activity to display albums and media content (images/videos) in each album
@@ -71,12 +78,12 @@ public class MatisseActivity extends AppCompatActivity implements
         AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener,
         AlbumMediaAdapter.OnPhotoCapture {
 
-    public static final String EXTRA_RESULT_SELECTION = "extra_result_selection";
-    public static final String EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path";
-    public static final String EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable";
-    private static final int REQUEST_CODE_PREVIEW = 23;
-    private static final int REQUEST_CODE_CAPTURE = 24;
-    public static final String CHECK_STATE = "checkState";
+    public static final String EXTRA_RESULT_SELECTION = MATISSE_EXTRA_RESULT_SELECTION;
+    public static final String EXTRA_RESULT_SELECTION_PATH = MATISSE_EXTRA_RESULT_SELECTION_PATH;
+    public static final String EXTRA_RESULT_ORIGINAL_ENABLE = MATISSE_EXTRA_RESULT_ORIGINAL_ENABLE;
+    private static final int REQUEST_CODE_PREVIEW = MATISSE_REQUEST_CODE_PREVIEW;
+    private static final int REQUEST_CODE_CAPTURE = MATISSE_REQUEST_CODE_CAPTURE;
+    public static final String CHECK_STATE = MATISSE_CHECK_STATE;
     private final AlbumCollection mAlbumCollection = new AlbumCollection();
     private MediaStoreCompat mMediaStoreCompat;
     private SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
