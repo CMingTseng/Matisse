@@ -155,31 +155,29 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
                 intent.getBundleExtra(EXTRA_RESULT_BUNDLE)?.let { resultBundle ->
                     val selected: ArrayList<Item>? = resultBundle.getParcelableArrayList<Item>(SelectedItemCollection.STATE_SELECTION)
                     mOriginalEnable = data.getBooleanExtra(EXTRA_RESULT_ORIGINAL_ENABLE, false)
-                    val collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,
-                            SelectedItemCollection.COLLECTION_UNDEFINED)
-                    if (data.getBooleanExtra(EXTRA_RESULT_APPLY, false)) {
-                        val result = Intent()
-                        val selectedUris = ArrayList<Uri>()
-                        val selectedPaths = ArrayList<String?>()
-                        selected?.let { items ->
+                    val collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,  SelectedItemCollection.COLLECTION_UNDEFINED)
+                    selected?.let { items ->
+                        if (data.getBooleanExtra(EXTRA_RESULT_APPLY, false)) {
+                            val result = Intent()
+                            val selectedUris = ArrayList<Uri>()
+                            val selectedPaths = ArrayList<String?>()
                             for (item in items) {
                                 selectedUris.add(item.contentUri)
                                 selectedPaths.add(getPath(this, item.contentUri))
                             }
+                            result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris)
+                            result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths)
+                            result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
+                            setResult(RESULT_OK, result)
+                            finish()
+                        } else {
+                            mSelectedCollection.overwrite(items, collectionType)
+                            val mediaSelectionFragment = supportFragmentManager.findFragmentByTag(  MediaSelectionFragment::class.java.simpleName)
+                            if (mediaSelectionFragment is MediaSelectionFragment) {
+                                mediaSelectionFragment.refreshMediaGrid()
+                            }
+                            updateBottomToolbar()
                         }
-                        result.putParcelableArrayListExtra(EXTRA_RESULT_SELECTION, selectedUris)
-                        result.putStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH, selectedPaths)
-                        result.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
-                        setResult(RESULT_OK, result)
-                        finish()
-                    } else {
-                        mSelectedCollection.overwrite(selected, collectionType)
-                        val mediaSelectionFragment = supportFragmentManager.findFragmentByTag(
-                                MediaSelectionFragment::class.java.simpleName)
-                        if (mediaSelectionFragment is MediaSelectionFragment) {
-                            mediaSelectionFragment.refreshMediaGrid()
-                        }
-                        updateBottomToolbar()
                     }
                 }
             }
