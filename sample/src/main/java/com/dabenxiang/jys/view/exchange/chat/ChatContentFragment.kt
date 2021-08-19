@@ -3,7 +3,6 @@ package com.dabenxiang.jys.view.exchange.chat
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +20,7 @@ import com.zhihu.matisse.engine.impl.GlideEngine
 import com.zhihu.matisse.filter.Filter
 import com.zhihu.matisse.filter.GifSizeFilter
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 
 class ChatContentFragment : Fragment(), View.OnClickListener {
@@ -60,7 +60,7 @@ class ChatContentFragment : Fragment(), View.OnClickListener {
             R.id.dracula -> Matisse.from(this)
                     .choose(MimeType.ofImage())
                     .theme(R.style.Matisse_Dracula)
-                    .countable(false)
+                    .countable(true)
                     .addFilter(GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
                     .maxSelectable(3)
                     .originalEnable(true)

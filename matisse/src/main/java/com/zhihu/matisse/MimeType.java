@@ -19,17 +19,13 @@ package com.zhihu.matisse;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.text.TextUtils;
-
-import androidx.collection.ArraySet;
-
 import android.webkit.MimeTypeMap;
-
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
-
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
+import androidx.collection.ArraySet;
 
 /**
  * MIME Type enumeration to restrict selectable media on the selection activity. Matisse only supports images and
@@ -106,6 +102,10 @@ public enum MimeType {
 
     public static Set<MimeType> of(MimeType type, MimeType... rest) {
         return EnumSet.of(type, rest);
+    }
+
+    public static Set<MimeType> ofSimpleImage() {
+        return EnumSet.of(JPEG, PNG);
     }
 
     public static Set<MimeType> ofImage() {
