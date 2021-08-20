@@ -32,6 +32,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.zhihu.matisse.*
+import com.zhihu.matisse.databinding.ActivityMatisseBinding
 import com.zhihu.matisse.internal.entity.Album
 import com.zhihu.matisse.internal.entity.Item
 import com.zhihu.matisse.internal.entity.SelectionSpec
@@ -56,11 +57,14 @@ import java.util.*
  * and also support media selecting operations.
  */
 class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnItemSelectedListener, MediaSelectionFragment.SelectionProvider, View.OnClickListener, AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener, AlbumMediaAdapter.OnPhotoCapture {
+    private var _binding: ActivityMatisseBinding? = null
+    private val binding get() = _binding!!
+//     private lateinit var binding: ActivityMatisseBinding
     private val mAlbumCollection = AlbumCollection()
     private var mMediaStoreCompat: MediaStoreCompat? = null
     private val mSelectedCollection = SelectedItemCollection(this)
     private var mSpec: SelectionSpec? = null
-    private val albumsspinner = AlbumsSpinner(this)
+    private lateinit var albumsspinner : AlbumsSpinner
     private var mAlbumsAdapter: AlbumsAdapter? = null
 
     private var mOriginalEnable = false
@@ -75,7 +79,10 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
                 finish()
                 return
             }
-            setContentView(R.layout.activity_matisse)
+            _binding = ActivityMatisseBinding.inflate(layoutInflater, container, false)
+//             binding = ActivityMatisseBinding.inflate(layoutInflater)
+            val view = binding.root
+            setContentView( view)
             if (it.needOrientationRestriction()) {
                 requestedOrientation = it.orientation
             }
@@ -84,7 +91,7 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
                 if (it.captureStrategy == null) throw RuntimeException("Don't forget to set CaptureStrategy.")
                 mMediaStoreCompat!!.setCaptureStrategy(it.captureStrategy)
             }
-            setSupportActionBar(toolbar)
+            setSupportActionBar(binding.toolbar)
             val actionBar = supportActionBar
             actionBar!!.setDisplayShowTitleEnabled(false)
             actionBar.setDisplayHomeAsUpEnabled(true)
@@ -93,15 +100,16 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
             val color = ta.getColor(0, 0)
             ta.recycle()
             navigationIcon!!.setColorFilter(color, PorterDuff.Mode.SRC_IN)
-            button_preview!!.setOnClickListener(this)
-            button_apply!!.setOnClickListener(this)
-            originalLayout.setOnClickListener(this)
+            binding.buttonPreview.setOnClickListener(this)
+            binding.buttonApply.setOnClickListener(this)
+            binding.originalLayout.setOnClickListener(this)
             mSelectedCollection.onCreate(savedInstanceState)
             if (savedInstanceState != null) {
                 mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE)
             }
             updateBottomToolbar()
             mAlbumsAdapter = AlbumsAdapter(this, null, false)
+            albumsspinner = AlbumsSpinner(this)
             albumsspinner.setOnItemSelectedListener(this)
             albumsspinner.setSelectedTextView(findViewById<View>(R.id.selected_album) as TextView)
             albumsspinner.setPopupAnchorView(findViewById(R.id.toolbar))
@@ -203,35 +211,35 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
     private fun updateBottomToolbar() {
         val selectedCount = mSelectedCollection.count()
         if (selectedCount == 0) {
-            button_preview!!.isEnabled = false
-            button_apply!!.isEnabled = false
-            button_apply!!.text = getString(R.string.button_apply_default)
+            binding.buttonPreview!!.isEnabled = false
+            binding.buttonApply.isEnabled = false
+            binding.buttonApply!!.text = getString(R.string.button_apply_default)
         } else if (selectedCount == 1 && mSpec!!.singleSelectionModeEnabled()) {
-            button_preview!!.isEnabled = true
-            button_apply!!.setText(R.string.button_apply_default)
-            button_apply!!.isEnabled = true
+            binding.buttonPreview!!.isEnabled = true
+            binding.buttonApply!!.setText(R.string.button_apply_default)
+            binding.buttonApply!!.isEnabled = true
         } else {
-            button_preview!!.isEnabled = true
-            button_apply!!.isEnabled = true
-            button_apply!!.text = getString(R.string.button_apply, selectedCount)
+            binding.buttonPreview!!.isEnabled = true
+            binding.buttonApply!!.isEnabled = true
+            binding.buttonApply!!.text = getString(R.string.button_apply, selectedCount)
         }
         if (mSpec!!.originalable) {
-            originalLayout!!.visibility = View.VISIBLE
+            binding.originalLayout.visibility = View.VISIBLE
             updateOriginalState()
         } else {
-            originalLayout!!.visibility = View.INVISIBLE
+            binding.originalLayout!!.visibility = View.INVISIBLE
         }
     }
 
     private fun updateOriginalState() {
-        original!!.setChecked(mOriginalEnable)
+        binding.original.setChecked(mOriginalEnable)
         if (countOverMaxSize() > 0) {
             if (mOriginalEnable) {
                 val incapableDialog = IncapableDialog.newInstance("",
                         getString(R.string.error_over_original_size, mSpec!!.originalMaxSize))
                 incapableDialog.show(supportFragmentManager,
                         IncapableDialog::class.java.name)
-                original!!.setChecked(false)
+                binding.original.setChecked(false)
                 mOriginalEnable = false
             }
         }
@@ -277,7 +285,7 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
                 return
             }
             mOriginalEnable = !mOriginalEnable
-            original!!.setChecked(mOriginalEnable)
+            binding.original.setChecked(mOriginalEnable)
             if (mSpec!!.onCheckedListener != null) {
                 mSpec!!.onCheckedListener.onCheck(mOriginalEnable)
             }
@@ -317,11 +325,11 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
 
     private fun onAlbumSelected(album: Album) {
         if (album.isAll && album.isEmpty) {
-            container!!.visibility = View.GONE
-            empty_view!!.visibility = View.VISIBLE
+            binding.container.visibility = View.GONE
+            binding.emptyView.visibility = View.VISIBLE
         } else {
-            container!!.visibility = View.VISIBLE
-            empty_view!!.visibility = View.GONE
+            binding.container.visibility = View.VISIBLE
+            binding.emptyView.visibility = View.GONE
             val fragment: Fragment = MediaSelectionFragment.newInstance(album)
             supportFragmentManager
                     .beginTransaction()
