@@ -60,7 +60,7 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
     private var mMediaStoreCompat: MediaStoreCompat? = null
     private val mSelectedCollection = SelectedItemCollection(this)
     private var mSpec: SelectionSpec? = null
-    private var mAlbumsSpinner: AlbumsSpinner? = null
+    private val albumsspinner = AlbumsSpinner(this)
     private var mAlbumsAdapter: AlbumsAdapter? = null
 
     private var mOriginalEnable = false
@@ -102,11 +102,10 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
             }
             updateBottomToolbar()
             mAlbumsAdapter = AlbumsAdapter(this, null, false)
-            mAlbumsSpinner = AlbumsSpinner(this)
-            mAlbumsSpinner!!.setOnItemSelectedListener(this)
-            mAlbumsSpinner!!.setSelectedTextView(findViewById<View>(R.id.selected_album) as TextView)
-            mAlbumsSpinner!!.setPopupAnchorView(findViewById(R.id.toolbar))
-            mAlbumsSpinner!!.setAdapter(mAlbumsAdapter)
+            albumsspinner.setOnItemSelectedListener(this)
+            albumsspinner.setSelectedTextView(findViewById<View>(R.id.selected_album) as TextView)
+            albumsspinner.setPopupAnchorView(findViewById(R.id.toolbar))
+            albumsspinner.setAdapter(mAlbumsAdapter)
             mAlbumCollection.onCreate(this, this)
             mAlbumCollection.onRestoreInstanceState(savedInstanceState)
             mAlbumCollection.loadAlbums()
@@ -302,7 +301,7 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
         val handler = Handler(Looper.getMainLooper())
         handler.post {
             cursor.moveToPosition(mAlbumCollection.currentSelection)
-            mAlbumsSpinner!!.setSelection(this@MatisseActivity,
+            albumsspinner.setSelection(this@MatisseActivity,
                     mAlbumCollection.currentSelection)
             val album = Album.valueOf(cursor)
             if (album.isAll && SelectionSpec.getInstance().capture) {
