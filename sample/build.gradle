@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+//TODO :
+// Warning: The 'kotlin-android-extensions' Gradle plugin is deprecated.
+// Please use this migration guide (https://goo.gle/kotlin-android-extensions-deprecation) to start working with View Binding
+// (https://developer.android.com/topic/libraries/view-binding) and the 'kotlin-parcelize' plugin.
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
+    id 'kotlin-android-extensions'// use viewBinding replace
     id 'kotlin-kapt'
 }
 
@@ -25,6 +29,10 @@ android {
     buildToolsVersion "30.0.3"
     lintOptions {
         disable 'MissingDefaultResource'
+        abortOnError false
+    }
+    buildFeatures {
+        viewBinding true
     }
     defaultConfig {
         applicationId "com.dabenxiang.jys"
@@ -32,9 +40,6 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
-    }
-    lintOptions {
-        abortOnError false
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
