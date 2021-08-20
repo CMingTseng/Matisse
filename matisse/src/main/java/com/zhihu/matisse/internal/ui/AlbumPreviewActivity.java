@@ -51,9 +51,9 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements AlbumMe
 
         Item item = getIntent().getParcelableExtra(EXTRA_ITEM);
         if (mSpec.countable) {
-            mCheckView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+            mBinding.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
         } else {
-            mCheckView.setChecked(mSelectedCollection.isSelected(item));
+            mBinding.checkView.setChecked(mSelectedCollection.isSelected(item));
         }
         updateSize(item);
     }
@@ -74,7 +74,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements AlbumMe
             return;
         }
 
-        PreviewPagerAdapter adapter = (PreviewPagerAdapter) mPager.getAdapter();
+        final PreviewPagerAdapter adapter = (PreviewPagerAdapter) mBinding.pager.getAdapter();
         adapter.addAll(items);
         adapter.notifyDataSetChanged();
         if (!mIsAlreadySetPosition) {
@@ -82,7 +82,7 @@ public class AlbumPreviewActivity extends BasePreviewActivity implements AlbumMe
             mIsAlreadySetPosition = true;
             Item selected = getIntent().getParcelableExtra(EXTRA_ITEM);
             int selectedIndex = items.indexOf(selected);
-            mPager.setCurrentItem(selectedIndex, false);
+            mBinding.pager.setCurrentItem(selectedIndex, false);
             mPreviousPos = selectedIndex;
         }
     }

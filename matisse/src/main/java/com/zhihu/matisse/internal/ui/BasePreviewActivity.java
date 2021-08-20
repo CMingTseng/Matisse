@@ -21,17 +21,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.zhihu.matisse.R;
+import com.zhihu.matisse.databinding.ActivityMediaPreviewBinding;
 import com.zhihu.matisse.internal.entity.IncapableCause;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
 import com.zhihu.matisse.internal.model.SelectedItemCollection;
 import com.zhihu.matisse.internal.ui.adapter.PreviewPagerAdapter;
-import com.zhihu.matisse.internal.ui.widget.CheckRadioView;
 import com.zhihu.matisse.internal.ui.widget.CheckView;
 import com.zhihu.matisse.internal.ui.widget.IncapableDialog;
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
@@ -50,29 +47,13 @@ import static com.zhihu.matisse.ConstantKt.EXTRA_RESULT_BUNDLE;
 import static com.zhihu.matisse.ConstantKt.EXTRA_RESULT_ORIGINAL_ENABLE;
 
 
-public abstract class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener,
-        ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
-
-
+public abstract class BasePreviewActivity extends AppCompatActivity implements View.OnClickListener, ViewPager.OnPageChangeListener, OnFragmentInteractionListener {
+    protected ActivityMediaPreviewBinding mBinding;
     protected final SelectedItemCollection mSelectedCollection = new SelectedItemCollection(this);
     protected SelectionSpec mSpec;
-    protected ViewPager mPager;
-
     protected PreviewPagerAdapter mAdapter;
-
-    protected CheckView mCheckView;
-    protected TextView mButtonBack;
-    protected TextView mButtonApply;
-    protected TextView mSize;
-
     protected int mPreviousPos = -1;
-
-    private LinearLayout mOriginalLayout;
-    private CheckRadioView mOriginal;
     protected boolean mOriginalEnable;
-
-    private FrameLayout mBottomToolbar;
-    private FrameLayout mTopToolbar;
     private boolean mIsToolbarHide = false;
 
     @Override
@@ -84,7 +65,8 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
             finish();
             return;
         }
-        setContentView(R.layout.activity_media_preview);
+        mBinding = ActivityMediaPreviewBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         if (Platform.hasKitKat()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
@@ -101,40 +83,33 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
             mSelectedCollection.onCreate(savedInstanceState);
             mOriginalEnable = savedInstanceState.getBoolean(CHECK_STATE);
         }
-        mButtonBack = (TextView) findViewById(R.id.button_back);
-        mButtonApply = (TextView) findViewById(R.id.button_apply);
-        mSize = (TextView) findViewById(R.id.size);
-        mButtonBack.setOnClickListener(this);
-        mButtonApply.setOnClickListener(this);
+        mBinding.buttonBack.setOnClickListener(this);
+        mBinding.buttonApply.setOnClickListener(this);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.addOnPageChangeListener(this);
+        mBinding.pager.addOnPageChangeListener(this);
         mAdapter = new PreviewPagerAdapter(getSupportFragmentManager(), null);
-        mPager.setAdapter(mAdapter);
-        mCheckView = (CheckView) findViewById(R.id.check_view);
-        mCheckView.setCountable(mSpec.countable);
-        mBottomToolbar = findViewById(R.id.bottom_toolbar);
-        mTopToolbar = findViewById(R.id.top_toolbar);
+        mBinding.pager.setAdapter(mAdapter);
+        mBinding.checkView.setCountable(mSpec.countable);
 
-        mCheckView.setOnClickListener(new View.OnClickListener() {
+        mBinding.checkView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                Item item = mAdapter.getMediaItem(mPager.getCurrentItem());
+                Item item = mAdapter.getMediaItem(mBinding.pager.getCurrentItem());
                 if (mSelectedCollection.isSelected(item)) {
                     mSelectedCollection.remove(item);
                     if (mSpec.countable) {
-                        mCheckView.setCheckedNum(CheckView.UNCHECKED);
+                        mBinding.checkView.setCheckedNum(CheckView.UNCHECKED);
                     } else {
-                        mCheckView.setChecked(false);
+                        mBinding.checkView.setChecked(false);
                     }
                 } else {
                     if (assertAddSelection(item)) {
                         mSelectedCollection.add(item);
                         if (mSpec.countable) {
-                            mCheckView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
+                            mBinding.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
                         } else {
-                            mCheckView.setChecked(true);
+                            mBinding.checkView.setChecked(true);
                         }
                     }
                 }
@@ -146,11 +121,7 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
                 }
             }
         });
-
-
-        mOriginalLayout = findViewById(R.id.originalLayout);
-        mOriginal = findViewById(R.id.original);
-        mOriginalLayout.setOnClickListener(new View.OnClickListener() {
+        mBinding.originalLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -164,9 +135,9 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
                 }
 
                 mOriginalEnable = !mOriginalEnable;
-                mOriginal.setChecked(mOriginalEnable);
+                mBinding.original.setChecked(mOriginalEnable);
                 if (!mOriginalEnable) {
-                    mOriginal.setColor(Color.WHITE);
+                    mBinding.original.setColor(Color.WHITE);
                 }
 
 
@@ -209,22 +180,22 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
         }
 
         if (mIsToolbarHide) {
-            mTopToolbar.animate()
+            mBinding.topToolbar.animate()
                     .setInterpolator(new FastOutSlowInInterpolator())
-                    .translationYBy(mTopToolbar.getMeasuredHeight())
+                    .translationYBy(mBinding.topToolbar.getMeasuredHeight())
                     .start();
-            mBottomToolbar.animate()
-                    .translationYBy(-mBottomToolbar.getMeasuredHeight())
+            mBinding.bottomToolbar.animate()
+                    .translationYBy(-mBinding.bottomToolbar.getMeasuredHeight())
                     .setInterpolator(new FastOutSlowInInterpolator())
                     .start();
         } else {
-            mTopToolbar.animate()
+            mBinding.topToolbar.animate()
                     .setInterpolator(new FastOutSlowInInterpolator())
-                    .translationYBy(-mTopToolbar.getMeasuredHeight())
+                    .translationYBy(-mBinding.topToolbar.getMeasuredHeight())
                     .start();
-            mBottomToolbar.animate()
+            mBinding.bottomToolbar.animate()
                     .setInterpolator(new FastOutSlowInInterpolator())
-                    .translationYBy(mBottomToolbar.getMeasuredHeight())
+                    .translationYBy(mBinding.bottomToolbar.getMeasuredHeight())
                     .start();
         }
 
@@ -239,26 +210,26 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
 
     @Override
     public void onPageSelected(int position) {
-        PreviewPagerAdapter adapter = (PreviewPagerAdapter) mPager.getAdapter();
+        PreviewPagerAdapter adapter = (PreviewPagerAdapter) mBinding.pager.getAdapter();
         if (mPreviousPos != -1 && mPreviousPos != position) {
-            ((PreviewItemFragment) adapter.instantiateItem(mPager, mPreviousPos)).resetView();
+            ((PreviewItemFragment) adapter.instantiateItem(mBinding.pager, mPreviousPos)).resetView();
 
             Item item = adapter.getMediaItem(position);
             if (mSpec.countable) {
                 int checkedNum = mSelectedCollection.checkedNumOf(item);
-                mCheckView.setCheckedNum(checkedNum);
+                mBinding.checkView.setCheckedNum(checkedNum);
                 if (checkedNum > 0) {
-                    mCheckView.setEnabled(true);
+                    mBinding.checkView.setEnabled(true);
                 } else {
-                    mCheckView.setEnabled(!mSelectedCollection.maxSelectableReached());
+                    mBinding.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
                 }
             } else {
                 boolean checked = mSelectedCollection.isSelected(item);
-                mCheckView.setChecked(checked);
+                mBinding.checkView.setChecked(checked);
                 if (checked) {
-                    mCheckView.setEnabled(true);
+                    mBinding.checkView.setEnabled(true);
                 } else {
-                    mCheckView.setEnabled(!mSelectedCollection.maxSelectableReached());
+                    mBinding.checkView.setEnabled(!mSelectedCollection.maxSelectableReached());
                 }
             }
             updateSize(item);
@@ -274,29 +245,29 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
     private void updateApplyButton() {
         int selectedCount = mSelectedCollection.count();
         if (selectedCount == 0) {
-            mButtonApply.setText(R.string.button_apply_default);
-            mButtonApply.setEnabled(false);
+            mBinding.buttonApply.setText(R.string.button_apply_default);
+            mBinding.buttonApply.setEnabled(false);
         } else if (selectedCount == 1 && mSpec.singleSelectionModeEnabled()) {
-            mButtonApply.setText(R.string.button_apply_default);
-            mButtonApply.setEnabled(true);
+            mBinding.buttonApply.setText(R.string.button_apply_default);
+            mBinding.buttonApply.setEnabled(true);
         } else {
-            mButtonApply.setEnabled(true);
-            mButtonApply.setText(getString(R.string.button_apply, selectedCount));
+            mBinding.buttonApply.setEnabled(true);
+            mBinding.buttonApply.setText(getString(R.string.button_apply, selectedCount));
         }
 
         if (mSpec.originalable) {
-            mOriginalLayout.setVisibility(View.VISIBLE);
+            mBinding.originalLayout.setVisibility(View.VISIBLE);
             updateOriginalState();
         } else {
-            mOriginalLayout.setVisibility(View.GONE);
+            mBinding.originalLayout.setVisibility(View.GONE);
         }
     }
 
 
     private void updateOriginalState() {
-        mOriginal.setChecked(mOriginalEnable);
+        mBinding.original.setChecked(mOriginalEnable);
         if (!mOriginalEnable) {
-            mOriginal.setColor(Color.WHITE);
+            mBinding.original.setColor(Color.WHITE);
         }
 
         if (countOverMaxSize() > 0) {
@@ -307,8 +278,8 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
                 incapableDialog.show(getSupportFragmentManager(),
                         IncapableDialog.class.getName());
 
-                mOriginal.setChecked(false);
-                mOriginal.setColor(Color.WHITE);
+                mBinding.original.setChecked(false);
+                mBinding.original.setColor(Color.WHITE);
                 mOriginalEnable = false;
             }
         }
@@ -332,16 +303,16 @@ public abstract class BasePreviewActivity extends AppCompatActivity implements V
 
     protected void updateSize(Item item) {
         if (item.isGif()) {
-            mSize.setVisibility(View.VISIBLE);
-            mSize.setText(PhotoMetadataUtils.getSizeInMB(item.size) + "M");
+            mBinding.size.setVisibility(View.VISIBLE);
+            mBinding.size.setText(PhotoMetadataUtils.getSizeInMB(item.size) + "M");
         } else {
-            mSize.setVisibility(View.GONE);
+            mBinding.size.setVisibility(View.GONE);
         }
 
         if (item.isVideo()) {
-            mOriginalLayout.setVisibility(View.GONE);
+            mBinding.originalLayout.setVisibility(View.GONE);
         } else if (mSpec.originalable) {
-            mOriginalLayout.setVisibility(View.VISIBLE);
+            mBinding.originalLayout.setVisibility(View.VISIBLE);
         }
     }
 
