@@ -13,58 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhihu.matisse.internal.ui.adapter;
+package com.zhihu.matisse.internal.ui.adapter
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import android.view.ViewGroup;
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
+import com.zhihu.matisse.internal.entity.Item
+import com.zhihu.matisse.internal.ui.PreviewItemFragment
+import java.util.*
 
-import com.zhihu.matisse.internal.entity.Item;
-import com.zhihu.matisse.internal.ui.PreviewItemFragment;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class PreviewPagerAdapter extends FragmentPagerAdapter {
-
-    private ArrayList<Item> mItems = new ArrayList<>();
-    private OnPrimaryItemSetListener mListener;
-
-    public PreviewPagerAdapter(FragmentManager manager, OnPrimaryItemSetListener listener) {
-        super(manager);
-        mListener = listener;
-    }
-
-    @Override
-    public Fragment getItem(int position) {
-        return PreviewItemFragment.newInstance(mItems.get(position));
-    }
-
-    @Override
-    public int getCount() {
-        return mItems.size();
-    }
-
-    @Override
-    public void setPrimaryItem(ViewGroup container, int position, Object object) {
-        super.setPrimaryItem(container, position, object);
-        if (mListener != null) {
-            mListener.onPrimaryItemSet(position);
-        }
-    }
-
-    public Item getMediaItem(int position) {
-        return mItems.get(position);
-    }
-
-    public void addAll(List<Item> items) {
-        mItems.addAll(items);
-    }
-
+class PreviewPagerAdapter(manager: FragmentManager?, private val mListener: OnPrimaryItemSetListener?) : FragmentPagerAdapter(manager!!) {
     interface OnPrimaryItemSetListener {
-
-        void onPrimaryItemSet(int position);
+        fun onPrimaryItemSet(position: Int)
+    }
+    private val mItems = ArrayList<Item>()
+    fun getMediaItem(position: Int): Item {
+        return mItems[position]
     }
 
+    fun addAll(items: List<Item>?) {
+        mItems.addAll(items!!)
+    }
+    override fun getItem(position: Int): Fragment {
+        return PreviewItemFragment.newInstance(mItems[position])
+    }
+
+    override fun getCount(): Int {
+        return mItems.size
+    }
+
+    override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
+        super.setPrimaryItem(container, position, `object`)
+        mListener?.onPrimaryItemSet(position)
+    }
 }

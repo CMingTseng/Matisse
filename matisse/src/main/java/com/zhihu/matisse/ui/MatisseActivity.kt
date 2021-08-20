@@ -38,7 +38,6 @@ import com.zhihu.matisse.internal.entity.SelectionSpec
 import com.zhihu.matisse.internal.model.AlbumCollection
 import com.zhihu.matisse.internal.model.SelectedItemCollection
 import com.zhihu.matisse.internal.ui.AlbumPreviewActivity
-import com.zhihu.matisse.internal.ui.BasePreviewActivity
 import com.zhihu.matisse.internal.ui.MediaSelectionFragment
 import com.zhihu.matisse.internal.ui.SelectedPreviewActivity
 import com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter
@@ -57,8 +56,6 @@ import java.util.*
  * and also support media selecting operations.
  */
 class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnItemSelectedListener, MediaSelectionFragment.SelectionProvider, View.OnClickListener, AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener, AlbumMediaAdapter.OnPhotoCapture {
-
-
     private val mAlbumCollection = AlbumCollection()
     private var mMediaStoreCompat: MediaStoreCompat? = null
     private val mSelectedCollection = SelectedItemCollection(this)
@@ -155,7 +152,7 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
                 intent.getBundleExtra(EXTRA_RESULT_BUNDLE)?.let { resultBundle ->
                     val selected: ArrayList<Item>? = resultBundle.getParcelableArrayList<Item>(SelectedItemCollection.STATE_SELECTION)
                     mOriginalEnable = data.getBooleanExtra(EXTRA_RESULT_ORIGINAL_ENABLE, false)
-                    val collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE,  SelectedItemCollection.COLLECTION_UNDEFINED)
+                    val collectionType = resultBundle.getInt(SelectedItemCollection.STATE_COLLECTION_TYPE, SelectedItemCollection.COLLECTION_UNDEFINED)
                     selected?.let { items ->
                         if (data.getBooleanExtra(EXTRA_RESULT_APPLY, false)) {
                             val result = Intent()
@@ -172,7 +169,7 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
                             finish()
                         } else {
                             mSelectedCollection.overwrite(items, collectionType)
-                            val mediaSelectionFragment = supportFragmentManager.findFragmentByTag(  MediaSelectionFragment::class.java.simpleName)
+                            val mediaSelectionFragment = supportFragmentManager.findFragmentByTag(MediaSelectionFragment::class.java.simpleName)
                             if (mediaSelectionFragment is MediaSelectionFragment) {
                                 mediaSelectionFragment.refreshMediaGrid()
                             }

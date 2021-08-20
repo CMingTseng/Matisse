@@ -13,93 +13,75 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhihu.matisse.internal.ui.adapter;
+package com.zhihu.matisse.internal.ui.adapter
 
-import android.database.Cursor;
-import android.provider.MediaStore;
-import androidx.recyclerview.widget.RecyclerView;
+import android.database.Cursor
+import android.provider.MediaStore
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
-public abstract class RecyclerViewCursorAdapter<VH extends RecyclerView.ViewHolder> extends
-        RecyclerView.Adapter<VH> {
-
-    private Cursor mCursor;
-    private int mRowIDColumn;
-
-    RecyclerViewCursorAdapter(Cursor c) {
-        setHasStableIds(true);
-        swapCursor(c);
+abstract class RecyclerViewCursorAdapter<VH : ViewHolder?> internal constructor(c: Cursor?) : RecyclerView.Adapter<VH>() {
+    var cursor: Cursor? = null
+        private set
+    private var mRowIDColumn = 0
+    protected abstract fun onBindViewHolder(holder: VH, cursor: Cursor?)
+    override fun onBindViewHolder(holder: VH, position: Int) {
+        check(isDataValid(cursor)) { "Cannot bind view holder when cursor is in invalid state." }
+        check(cursor!!.moveToPosition(position)) {
+            ("Could not move cursor to position " + position
+                    + " when trying to bind view holder")
+        }
+        onBindViewHolder(holder, cursor)
     }
 
-    protected abstract void onBindViewHolder(VH holder, Cursor cursor);
-
-    @Override
-    public void onBindViewHolder(VH holder, int position) {
-        if (!isDataValid(mCursor)) {
-            throw new IllegalStateException("Cannot bind view holder when cursor is in invalid state.");
+    override fun getItemViewType(position: Int): Int {
+        check(cursor!!.moveToPosition(position)) {
+            ("Could not move cursor to position " + position
+                    + " when trying to get item view type.")
         }
-        if (!mCursor.moveToPosition(position)) {
-            throw new IllegalStateException("Could not move cursor to position " + position
-                    + " when trying to bind view holder");
-        }
-
-        onBindViewHolder(holder, mCursor);
+        return getItemViewType(position, cursor)
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (!mCursor.moveToPosition(position)) {
-            throw new IllegalStateException("Could not move cursor to position " + position
-                    + " when trying to get item view type.");
-        }
-        return getItemViewType(position, mCursor);
-    }
-
-    protected abstract int getItemViewType(int position, Cursor cursor);
-
-    @Override
-    public int getItemCount() {
-        if (isDataValid(mCursor)) {
-            return mCursor.getCount();
+    protected abstract fun getItemViewType(position: Int, cursor: Cursor?): Int
+    override fun getItemCount(): Int {
+        return if (isDataValid(cursor)) {
+            cursor!!.count
         } else {
-            return 0;
+            0
         }
     }
 
-    @Override
-    public long getItemId(int position) {
-        if (!isDataValid(mCursor)) {
-            throw new IllegalStateException("Cannot lookup item id when cursor is in invalid state.");
+    override fun getItemId(position: Int): Long {
+        check(isDataValid(cursor)) { "Cannot lookup item id when cursor is in invalid state." }
+        check(cursor!!.moveToPosition(position)) {
+            ("Could not move cursor to position " + position
+                    + " when trying to get an item id")
         }
-        if (!mCursor.moveToPosition(position)) {
-            throw new IllegalStateException("Could not move cursor to position " + position
-                    + " when trying to get an item id");
-        }
-
-        return mCursor.getLong(mRowIDColumn);
+        return cursor!!.getLong(mRowIDColumn)
     }
 
-    public void swapCursor(Cursor newCursor) {
-        if (newCursor == mCursor) {
-            return;
+    fun swapCursor(newCursor: Cursor?) {
+        if (newCursor === cursor) {
+            return
         }
-
         if (newCursor != null) {
-            mCursor = newCursor;
-            mRowIDColumn = mCursor.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID);
+            cursor = newCursor
+            mRowIDColumn = cursor!!.getColumnIndexOrThrow(MediaStore.Files.FileColumns._ID)
             // notify the observers about the new cursor
-            notifyDataSetChanged();
+            notifyDataSetChanged()
         } else {
-            notifyItemRangeRemoved(0, getItemCount());
-            mCursor = null;
-            mRowIDColumn = -1;
+            notifyItemRangeRemoved(0, itemCount)
+            cursor = null
+            mRowIDColumn = -1
         }
     }
 
-    public Cursor getCursor() {
-        return mCursor;
+    private fun isDataValid(cursor: Cursor?): Boolean {
+        return cursor != null && !cursor.isClosed
     }
 
-    private boolean isDataValid(Cursor cursor) {
-        return cursor != null && !cursor.isClosed();
+    init {
+        setHasStableIds(true)
+        swapCursor(c)
     }
 }
