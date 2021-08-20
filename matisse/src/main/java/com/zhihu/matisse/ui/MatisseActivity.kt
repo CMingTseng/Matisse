@@ -49,7 +49,6 @@ import com.zhihu.matisse.internal.utils.MediaStoreCompat
 import com.zhihu.matisse.internal.utils.PathUtils.Companion.getPath
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils.Companion.getSizeInMB
 import com.zhihu.matisse.internal.utils.SingleMediaScanner
-import kotlinx.android.synthetic.main.activity_matisse.*
 import java.util.*
 
 /**
@@ -59,12 +58,12 @@ import java.util.*
 class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnItemSelectedListener, MediaSelectionFragment.SelectionProvider, View.OnClickListener, AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener, AlbumMediaAdapter.OnPhotoCapture {
     private var _binding: ActivityMatisseBinding? = null
     private val binding get() = _binding!!
-//     private lateinit var binding: ActivityMatisseBinding
+//  private lateinit var binding: ActivityMatisseBinding
     private val mAlbumCollection = AlbumCollection()
     private var mMediaStoreCompat: MediaStoreCompat? = null
     private val mSelectedCollection = SelectedItemCollection(this)
     private var mSpec: SelectionSpec? = null
-    private lateinit var albumsspinner : AlbumsSpinner
+    private lateinit var albumsspinner: AlbumsSpinner
     private var mAlbumsAdapter: AlbumsAdapter? = null
 
     private var mOriginalEnable = false
@@ -79,10 +78,10 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
                 finish()
                 return
             }
-            _binding = ActivityMatisseBinding.inflate(layoutInflater, container, false)
+            _binding = ActivityMatisseBinding.inflate(layoutInflater)
 //             binding = ActivityMatisseBinding.inflate(layoutInflater)
             val view = binding.root
-            setContentView( view)
+            setContentView(view)
             if (it.needOrientationRestriction()) {
                 requestedOrientation = it.orientation
             }
@@ -95,7 +94,7 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
             val actionBar = supportActionBar
             actionBar!!.setDisplayShowTitleEnabled(false)
             actionBar.setDisplayHomeAsUpEnabled(true)
-            val navigationIcon = toolbar.navigationIcon
+            val navigationIcon = binding.toolbar.navigationIcon
             val ta = theme.obtainStyledAttributes(intArrayOf(R.attr.album_element_color))
             val color = ta.getColor(0, 0)
             ta.recycle()
