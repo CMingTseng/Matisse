@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.zhihu.matisse.R;
+import com.zhihu.matisse.databinding.FragmentPreviewItemBinding;
 import com.zhihu.matisse.internal.entity.Item;
 import com.zhihu.matisse.internal.entity.SelectionSpec;
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
@@ -40,8 +41,7 @@ import androidx.fragment.app.Fragment;
 import static com.zhihu.matisse.ConstantKt.ARGS_ITEM;
 
 public class PreviewItemFragment extends Fragment {
-
-
+    private FragmentPreviewItemBinding mBinding;
     private OnFragmentInteractionListener mListener;
 
     public static PreviewItemFragment newInstance(Item item) {
@@ -54,7 +54,8 @@ public class PreviewItemFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_preview_item, container, false);
+        mBinding = FragmentPreviewItemBinding.inflate(inflater);
+        return mBinding.getRoot();
     }
 
     @Override
@@ -64,11 +65,9 @@ public class PreviewItemFragment extends Fragment {
         if (item == null) {
             return;
         }
-
-        View videoPlayButton = view.findViewById(R.id.video_play_button);
         if (item.isVideo()) {
-            videoPlayButton.setVisibility(View.VISIBLE);
-            videoPlayButton.setOnClickListener(new View.OnClickListener() {
+            mBinding.videoPlayButton.setVisibility(View.VISIBLE);
+            mBinding.videoPlayButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -81,13 +80,10 @@ public class PreviewItemFragment extends Fragment {
                 }
             });
         } else {
-            videoPlayButton.setVisibility(View.GONE);
+            mBinding.videoPlayButton.setVisibility(View.GONE);
         }
-
-        ImageViewTouch image = (ImageViewTouch) view.findViewById(R.id.image_view);
-        image.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
-
-        image.setSingleTapListener(new ImageViewTouch.OnImageViewTouchSingleTapListener() {
+        mBinding.imageView.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+        mBinding.imageView.setSingleTapListener(new ImageViewTouch.OnImageViewTouchSingleTapListener() {
             @Override
             public void onSingleTapConfirmed() {
                 if (mListener != null) {
@@ -98,11 +94,9 @@ public class PreviewItemFragment extends Fragment {
 
         Point size = PhotoMetadataUtils.getBitmapSize(item.getContentUri(), getActivity());
         if (item.isGif()) {
-            SelectionSpec.getInstance().imageEngine.loadGifImage(getContext(), size.x, size.y, image,
-                    item.getContentUri());
+            SelectionSpec.getInstance().imageEngine.loadGifImage(getContext(), size.x, size.y,  mBinding.imageView, item.getContentUri());
         } else {
-            SelectionSpec.getInstance().imageEngine.loadImage(getContext(), size.x, size.y, image,
-                    item.getContentUri());
+            SelectionSpec.getInstance().imageEngine.loadImage(getContext(), size.x, size.y,  mBinding.imageView,   item.getContentUri());
         }
     }
 
