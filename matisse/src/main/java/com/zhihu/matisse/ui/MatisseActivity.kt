@@ -337,6 +337,10 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
         }
     }
 
+    override fun provideSelectedItemCollection(): SelectedItemCollection {
+        return mSelectedCollection
+    }
+
     override fun onUpdate() {
         // notify bottom toolbar that check state changed.
         updateBottomToolbar()
@@ -346,17 +350,13 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
         }
     }
 
-    override fun onMediaClick(album: Album, item: Item, adapterPosition: Int) {
+    override fun onMediaClick(album: Album?, item: Item?, adapterPosition: Int) {
         val intent = Intent(this, AlbumPreviewActivity::class.java)
         intent.putExtra(EXTRA_ALBUM, album)
         intent.putExtra(EXTRA_ITEM, item)
         intent.putExtra(EXTRA_DEFAULT_BUNDLE, mSelectedCollection.dataWithBundle)
         intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, mOriginalEnable)
         startActivityForResult(intent, REQUEST_CODE_PREVIEW)
-    }
-
-    override fun provideSelectedItemCollection(): SelectedItemCollection {
-        return mSelectedCollection
     }
 
     override fun capture() {

@@ -13,82 +13,75 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhihu.matisse.internal.ui;
+package com.zhihu.matisse.internal.ui
 
-import android.database.Cursor;
-import android.os.Bundle;
+import android.database.Cursor
+import android.os.Bundle
+import com.zhihu.matisse.EXTRA_ALBUM
+import com.zhihu.matisse.EXTRA_ITEM
+import com.zhihu.matisse.internal.entity.Album
+import com.zhihu.matisse.internal.entity.Item
+import com.zhihu.matisse.internal.entity.SelectionSpec
+import com.zhihu.matisse.internal.model.AlbumMediaCollection
+import com.zhihu.matisse.internal.ui.adapter.PreviewPagerAdapter
+import java.util.*
 
-import com.zhihu.matisse.internal.entity.Album;
-import com.zhihu.matisse.internal.entity.Item;
-import com.zhihu.matisse.internal.entity.SelectionSpec;
-import com.zhihu.matisse.internal.model.AlbumMediaCollection;
-import com.zhihu.matisse.internal.ui.adapter.PreviewPagerAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.annotation.Nullable;
-
-import static com.zhihu.matisse.ConstantKt.EXTRA_ALBUM;
-import static com.zhihu.matisse.ConstantKt.EXTRA_ITEM;
-
-public class AlbumPreviewActivity extends BasePreviewActivity implements AlbumMediaCollection.AlbumMediaCallbacks {
-    private AlbumMediaCollection mCollection = new AlbumMediaCollection();
-
-    private boolean mIsAlreadySetPosition;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+class AlbumPreviewActivity : BasePreviewActivity(), AlbumMediaCollection.AlbumMediaCallbacks {
+    private val mCollection = AlbumMediaCollection()
+    private var mIsAlreadySetPosition = false
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         if (!SelectionSpec.getInstance().hasInited) {
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
+            setResult(RESULT_CANCELED)
+            finish()
+            return
         }
-        mCollection.onCreate(this, this);
-        Album album = getIntent().getParcelableExtra(EXTRA_ALBUM);
-        mCollection.load(album);
-
-        Item item = getIntent().getParcelableExtra(EXTRA_ITEM);
-        if (mSpec.countable) {
-            mBinding.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
-        } else {
-            mBinding.checkView.setChecked(mSelectedCollection.isSelected(item));
+        mCollection.onCreate(this, this)
+        intent?.let {
+            it.getParcelableExtra<Album>(EXTRA_ALBUM)?.let { album ->
+                mCollection.load(album)
+            }
+            intent.getParcelableExtra<Item>(EXTRA_ITEM)?.let { item ->
+                if (mSpec.countable) {
+                    mBinding!!.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item))
+                } else {
+                    mBinding!!.checkView.setChecked(mSelectedCollection.isSelected(item))
+                }
+                updateSize(item)
+            }
         }
-        updateSize(item);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mCollection.onDestroy();
+    override fun onDestroy() {
+        super.onDestroy()
+        mCollection.onDestroy()
     }
 
-    @Override
-    public void onAlbumMediaLoad(Cursor cursor) {
-        List<Item> items = new ArrayList<>();
+    override fun onAlbumMediaLoad(cursor: Cursor) {
+        val items: MutableList<Item> = ArrayList()
         while (cursor.moveToNext()) {
-            items.add(Item.valueOf(cursor));
+            items.add(Item.valueOf(cursor))
         }
         if (items.isEmpty()) {
-            return;
+            return
         }
-
-        final PreviewPagerAdapter adapter = (PreviewPagerAdapter) mBinding.pager.getAdapter();
-        adapter.addAll(items);
-        adapter.notifyDataSetChanged();
-        if (!mIsAlreadySetPosition) {
-            //onAlbumMediaLoad is called many times..
-            mIsAlreadySetPosition = true;
-            Item selected = getIntent().getParcelableExtra(EXTRA_ITEM);
-            int selectedIndex = items.indexOf(selected);
-            mBinding.pager.setCurrentItem(selectedIndex, false);
-            mPreviousPos = selectedIndex;
+        mBinding!!.pager.adapter?.let { adapter ->
+            adapter as PreviewPagerAdapter
+            adapter.addAll(items)
+            adapter.notifyDataSetChanged()
+            if (!mIsAlreadySetPosition) {
+                //onAlbumMediaLoad is called many times..
+                mIsAlreadySetPosition = true
+                intent?.let {
+                    it.getParcelableExtra<Item>(EXTRA_ITEM)?.let{selected->
+                        val selectedIndex = items.indexOf(selected)
+                        mBinding!!.pager.setCurrentItem(selectedIndex, false)
+                        mPreviousPos = selectedIndex
+                    }
+                }
+            }
         }
     }
 
-    @Override
-    public void onAlbumMediaReset() {
-
-    }
+    override fun onAlbumMediaReset() {}
 }

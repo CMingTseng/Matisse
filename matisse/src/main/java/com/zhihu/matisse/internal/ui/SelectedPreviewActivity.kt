@@ -13,41 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhihu.matisse.internal.ui;
+package com.zhihu.matisse.internal.ui
 
-import android.os.Bundle;
+import android.os.Bundle
+import com.zhihu.matisse.EXTRA_DEFAULT_BUNDLE
+import com.zhihu.matisse.internal.entity.Item
+import com.zhihu.matisse.internal.entity.SelectionSpec
+import com.zhihu.matisse.internal.model.SelectedItemCollection
 
-import com.zhihu.matisse.internal.entity.Item;
-import com.zhihu.matisse.internal.entity.SelectionSpec;
-import com.zhihu.matisse.internal.model.SelectedItemCollection;
-
-import java.util.List;
-
-import androidx.annotation.Nullable;
-
-import static com.zhihu.matisse.ConstantKt.EXTRA_DEFAULT_BUNDLE;
-
-public class SelectedPreviewActivity extends BasePreviewActivity {
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+class SelectedPreviewActivity : BasePreviewActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         if (!SelectionSpec.getInstance().hasInited) {
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
+            setResult(RESULT_CANCELED)
+            finish()
+            return
         }
-
-        Bundle bundle = getIntent().getBundleExtra(EXTRA_DEFAULT_BUNDLE);
-        List<Item> selected = bundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION);
-        mAdapter.addAll(selected);
-        mAdapter.notifyDataSetChanged();
-        if (mSpec.countable) {
-            mBinding.checkView.setCheckedNum(1);
-        } else {
-            mBinding.checkView.setChecked(true);
+        intent?.let {
+            it.getBundleExtra(EXTRA_DEFAULT_BUNDLE)?.let { bundle->
+                bundle.getParcelableArrayList<Item>(SelectedItemCollection.STATE_SELECTION)?.let { selected->
+                    mAdapter!!.addAll(selected)
+                    mAdapter!!.notifyDataSetChanged()
+                    if (mSpec.countable) {
+                        mBinding!!.checkView.setCheckedNum(1)
+                    } else {
+                        mBinding!!.checkView.setChecked(true)
+                    }
+                    mPreviousPos = 0
+                    updateSize(selected[0])
+                }
+            }
         }
-        mPreviousPos = 0;
-        updateSize(selected.get(0));
     }
 }

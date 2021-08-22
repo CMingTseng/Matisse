@@ -13,114 +13,100 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.zhihu.matisse.internal.ui;
+package com.zhihu.matisse.internal.ui
 
-import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Point;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.zhihu.matisse.ARGS_ITEM
+import com.zhihu.matisse.R
+import com.zhihu.matisse.databinding.FragmentPreviewItemBinding
+import com.zhihu.matisse.internal.entity.Item
+import com.zhihu.matisse.internal.entity.SelectionSpec
+import com.zhihu.matisse.internal.utils.PhotoMetadataUtils.Companion.getBitmapSize
+import com.zhihu.matisse.listener.OnFragmentInteractionListener
+import it.sephiroth.android.library.imagezoom.ImageViewTouch
+import it.sephiroth.android.library.imagezoom.ImageViewTouchBase
 
-import com.zhihu.matisse.R;
-import com.zhihu.matisse.databinding.FragmentPreviewItemBinding;
-import com.zhihu.matisse.internal.entity.Item;
-import com.zhihu.matisse.internal.entity.SelectionSpec;
-import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
-import com.zhihu.matisse.listener.OnFragmentInteractionListener;
-
-import it.sephiroth.android.library.imagezoom.ImageViewTouch;
-import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
-
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-import static com.zhihu.matisse.ConstantKt.ARGS_ITEM;
-
-public class PreviewItemFragment extends Fragment {
-    private FragmentPreviewItemBinding mBinding;
-    private OnFragmentInteractionListener mListener;
-
-    public static PreviewItemFragment newInstance(Item item) {
-        PreviewItemFragment fragment = new PreviewItemFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(ARGS_ITEM, item);
-        fragment.setArguments(bundle);
-        return fragment;
+class PreviewItemFragment : Fragment() {
+    private var mBinding: FragmentPreviewItemBinding? = null
+    private var mListener: OnFragmentInteractionListener? = null
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        mBinding = FragmentPreviewItemBinding.inflate(inflater)
+        return mBinding!!.root
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mBinding = FragmentPreviewItemBinding.inflate(inflater);
-        return mBinding.getRoot();
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        final Item item = getArguments().getParcelable(ARGS_ITEM);
-        if (item == null) {
-            return;
-        }
-        if (item.isVideo()) {
-            mBinding.videoPlayButton.setVisibility(View.VISIBLE);
-            mBinding.videoPlayButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(item.uri, "video/*");
-                    try {
-                        startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                        Toast.makeText(getContext(), R.string.error_no_video_activity, Toast.LENGTH_SHORT).show();
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        requireArguments()?.let { arguments ->
+            arguments.getParcelable<Item>(ARGS_ITEM)?.let { item ->
+                if (item.isVideo) {
+                    mBinding!!.videoPlayButton.visibility = View.VISIBLE
+                    mBinding!!.videoPlayButton.setOnClickListener {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.setDataAndType(item.uri, "video/*")
+                        try {
+                            startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            Toast.makeText(context, R.string.error_no_video_activity, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    mBinding!!.videoPlayButton.visibility = View.GONE
+                }
+                val size = getBitmapSize(item.contentUri, requireActivity())
+                val context = requireContext()
+                if (item.isGif) {
+                    SelectionSpec.getInstance().imageEngine.loadGifImage(context, size.x, size.y, mBinding!!.imageView, item.contentUri)
+                } else {
+                    SelectionSpec.getInstance().imageEngine.loadImage(context, size.x, size.y, mBinding!!.imageView, item.contentUri)
+                }
+                mBinding!!.imageView.displayType = ImageViewTouchBase.DisplayType.FIT_TO_SCREEN
+                mBinding!!.imageView.setSingleTapListener {
+                    if (mListener != null) {
+                        mListener!!.onClick()
                     }
                 }
-            });
-        } else {
-            mBinding.videoPlayButton.setVisibility(View.GONE);
-        }
-        mBinding.imageView.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
-        mBinding.imageView.setSingleTapListener(new ImageViewTouch.OnImageViewTouchSingleTapListener() {
-            @Override
-            public void onSingleTapConfirmed() {
-                if (mListener != null) {
-                    mListener.onClick();
-                }
+            } ?: run {
+                return
             }
-        });
+        }
+    }
 
-        Point size = PhotoMetadataUtils.getBitmapSize(item.getContentUri(), getActivity());
-        if (item.isGif()) {
-            SelectionSpec.getInstance().imageEngine.loadGifImage(getContext(), size.x, size.y,  mBinding.imageView, item.getContentUri());
+    fun resetView() {
+        requireView()?.let {view->
+            (view.findViewById<View>(R.id.image_view) as ImageViewTouch).resetMatrix()
+        }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mListener = if (context is OnFragmentInteractionListener) {
+            context
         } else {
-            SelectionSpec.getInstance().imageEngine.loadImage(getContext(), size.x, size.y,  mBinding.imageView,   item.getContentUri());
+            throw RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener")
         }
     }
 
-    public void resetView() {
-        if (getView() != null) {
-            ((ImageViewTouch) getView().findViewById(R.id.image_view)).resetMatrix();
-        }
+    override fun onDetach() {
+        super.onDetach()
+        mListener = null
     }
 
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+    companion object {
+        fun newInstance(item: Item): PreviewItemFragment {
+            val fragment = PreviewItemFragment()
+            val bundle = Bundle()
+            bundle.putParcelable(ARGS_ITEM, item)
+            fragment.arguments = bundle
+            return fragment
         }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
     }
 }
