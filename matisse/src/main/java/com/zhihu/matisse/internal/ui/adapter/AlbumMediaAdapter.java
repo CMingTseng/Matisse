@@ -255,7 +255,6 @@ public class AlbumMediaAdapter extends RecyclerViewCursorAdapter<RecyclerView.Vi
             captureViewHolder.mHint.setCompoundDrawables(drawables[0], drawables[1], drawables[2], drawables[3]);
         } else if (holder instanceof MediaViewHolder) {
             MediaViewHolder mediaViewHolder = (MediaViewHolder) holder;
-
             final Item item = Item.valueOf(cursor);
             mediaViewHolder.mMediaGrid.preBindMedia(new MediaGrid.PreBindInfo(
                     getImageResize(mediaViewHolder.mMediaGrid.getContext()),

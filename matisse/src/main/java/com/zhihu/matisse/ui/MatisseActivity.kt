@@ -28,7 +28,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.zhihu.matisse.*
@@ -58,22 +57,21 @@ import java.util.*
 class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnItemSelectedListener, MediaSelectionFragment.SelectionProvider, View.OnClickListener, AlbumMediaAdapter.CheckStateListener, AlbumMediaAdapter.OnMediaClickListener, AlbumMediaAdapter.OnPhotoCapture {
     private var _binding: ActivityMatisseBinding? = null
     private val binding get() = _binding!!
-//  private lateinit var binding: ActivityMatisseBinding
+    //  private lateinit var binding: ActivityMatisseBinding
     private val mAlbumCollection = AlbumCollection()
     private var mMediaStoreCompat: MediaStoreCompat? = null
     private val mSelectedCollection = SelectedItemCollection(this)
-    private var mSpec: SelectionSpec? = null
+    private lateinit var mSpec: SelectionSpec
     private lateinit var albumsspinner: AlbumsSpinner
     private var mAlbumsAdapter: AlbumsAdapter? = null
-
     private var mOriginalEnable = false
     override fun onCreate(savedInstanceState: Bundle?) {
         // programmatically set theme before super.onCreate()
-        mSpec = SelectionSpec.getInstance()
-        mSpec?.let {
-            setTheme(it.themeId)
+        SelectionSpec.getInstance()?.let {
+            mSpec = it
+            setTheme(mSpec.themeId)
             super.onCreate(savedInstanceState)
-            if (!it.hasInited) {
+            if (!mSpec.hasInited) {
                 setResult(RESULT_CANCELED)
                 finish()
                 return
@@ -82,12 +80,12 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
 //             binding = ActivityMatisseBinding.inflate(layoutInflater)
             val view = binding.root
             setContentView(view)
-            if (it.needOrientationRestriction()) {
-                requestedOrientation = it.orientation
+            if (mSpec.needOrientationRestriction()) {
+                requestedOrientation = mSpec.orientation
             }
-            if (it.capture) {
+            if (mSpec.capture) {
                 mMediaStoreCompat = MediaStoreCompat(this)
-                if (it.captureStrategy == null) throw RuntimeException("Don't forget to set CaptureStrategy.")
+                if (mSpec.captureStrategy == null) throw RuntimeException("Don't forget to set CaptureStrategy.")
                 mMediaStoreCompat!!.setCaptureStrategy(it.captureStrategy)
             }
             setSupportActionBar(binding.toolbar)
@@ -110,8 +108,8 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
             mAlbumsAdapter = AlbumsAdapter(this, null, false)
             albumsspinner = AlbumsSpinner(this)
             albumsspinner.setOnItemSelectedListener(this)
-            albumsspinner.setSelectedTextView(findViewById<View>(R.id.selected_album) as TextView)
-            albumsspinner.setPopupAnchorView(findViewById(R.id.toolbar))
+            albumsspinner.setSelectedTextView(binding.selectedAlbum)
+            albumsspinner.setPopupAnchorView(binding.toolbar)
             albumsspinner.setAdapter(mAlbumsAdapter)
             mAlbumCollection.onCreate(this, this)
             mAlbumCollection.onRestoreInstanceState(savedInstanceState)
@@ -127,14 +125,14 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
         super.onSaveInstanceState(outState)
         mSelectedCollection.onSaveInstanceState(outState)
         mAlbumCollection.onSaveInstanceState(outState)
-        outState.putBoolean("checkState", mOriginalEnable)
+        outState.putBoolean(CHECK_STATE, mOriginalEnable)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mAlbumCollection.onDestroy()
-        mSpec!!.onCheckedListener = null
-        mSpec!!.onSelectedListener = null
+        mSpec.onCheckedListener = null
+        mSpec.onSelectedListener = null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -209,6 +207,9 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
 
     private fun updateBottomToolbar() {
         val selectedCount = mSelectedCollection.count()
+        if (mSpec.isUseHeaderHint){
+            binding.selectAlbumCountHint.text = String.format(getString(R.string.media_header_count_hint), selectedCount, mSpec.maxSelectable)
+        }
         if (selectedCount == 0) {
             binding.buttonPreview!!.isEnabled = false
             binding.buttonApply.isEnabled = false
@@ -285,8 +286,8 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
             }
             mOriginalEnable = !mOriginalEnable
             binding.original.setChecked(mOriginalEnable)
-            if (mSpec!!.onCheckedListener != null) {
-                mSpec!!.onCheckedListener.onCheck(mOriginalEnable)
+            if (mSpec.onCheckedListener != null) {
+                mSpec.onCheckedListener.onCheck(mOriginalEnable)
             }
         }
     }
@@ -344,8 +345,8 @@ class MatisseActivity : AppCompatActivity(), AlbumCollection.AlbumCallbacks, OnI
     override fun onUpdate() {
         // notify bottom toolbar that check state changed.
         updateBottomToolbar()
-        if (mSpec!!.onSelectedListener != null) {
-            mSpec!!.onSelectedListener.onSelected(
+        if (mSpec.onSelectedListener != null) {
+            mSpec.onSelectedListener.onSelected(
                     mSelectedCollection.asListOfUri(), mSelectedCollection.asListOfString())
         }
     }
