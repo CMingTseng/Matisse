@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import androidx.annotation.StyleRes;
+
 //FIXME How convert to kotlin ?  to kotlin the select to open not work
 public final class SelectionSpec {
 
@@ -54,6 +55,7 @@ public final class SelectionSpec {
     public OnSelectedListener onSelectedListener;
     public boolean originalable;
     public boolean autoHideToobar;
+    public boolean isUseHeaderHint=false;
     public int originalMaxSize;
     public OnCheckedListener onCheckedListener;
     public boolean showPreview;
@@ -91,6 +93,7 @@ public final class SelectionSpec {
         hasInited = true;
         originalable = false;
         autoHideToobar = false;
+        isUseHeaderHint = false;
         originalMaxSize = Integer.MAX_VALUE;
         showPreview = true;
     }

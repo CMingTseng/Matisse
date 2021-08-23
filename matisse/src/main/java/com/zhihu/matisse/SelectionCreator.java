@@ -369,4 +369,9 @@ public final class SelectionCreator {
         mSelectionSpec.showPreview = showPreview;
         return this;
     }
+
+    public SelectionCreator isUseHeaderHint(boolean enable) {
+        mSelectionSpec.isUseHeaderHint = enable;
+        return this;
+    }
 }
