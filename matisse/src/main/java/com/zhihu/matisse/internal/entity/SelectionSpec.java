@@ -107,7 +107,7 @@ public final class SelectionSpec {
     }
 
     public boolean onlyShowImages() {
-        return showSingleMediaType && MimeType.ofImage().containsAll(mimeTypeSet);
+        return showSingleMediaType && MimeType.ofImage(false).containsAll(mimeTypeSet);
     }
 
     public boolean onlyShowVideos() {

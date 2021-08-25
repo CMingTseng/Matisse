@@ -21,7 +21,7 @@ import com.zhihu.matisse.R
 import com.zhihu.matisse.internal.entity.IncapableCause
 import com.zhihu.matisse.internal.entity.Item
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils
-import java.util.HashSet
+import java.util.*
 
 class GifSizeFilter(minWidth: Int, minHeight: Int, maxSizeInBytes: Int) : Filter() {
     private var mMinWidth = 0
@@ -34,7 +34,7 @@ class GifSizeFilter(minWidth: Int, minHeight: Int, maxSizeInBytes: Int) : Filter
         mMaxSize = maxSizeInBytes
     }
 
-    override fun constraintTypes(): kotlin.collections.Set<MimeType> {
+    override fun constraintTypes(): Set<MimeType> {
         return object : HashSet<MimeType>() {
             init {
                 add(MimeType.GIF)

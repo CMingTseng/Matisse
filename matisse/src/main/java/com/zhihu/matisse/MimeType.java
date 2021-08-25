@@ -20,11 +20,14 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
+
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
+
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
+
 import androidx.collection.ArraySet;
 
 /**
@@ -108,12 +111,12 @@ public enum MimeType {
         return EnumSet.of(JPEG, PNG);
     }
 
-    public static Set<MimeType> ofImage() {
-        return EnumSet.of(JPEG, PNG, GIF, BMP, WEBP);
-    }
-
     public static Set<MimeType> ofImage(boolean onlyGif) {
-        return EnumSet.of(GIF);
+        if (onlyGif) {
+            return EnumSet.of(GIF);
+        } else {
+            return EnumSet.of(JPEG, PNG, GIF, BMP, WEBP);
+        }
     }
 
     public static Set<MimeType> ofGif() {

@@ -15,14 +15,10 @@
  */
 package com.zhihu.matisse.filter;
 
-import android.content.Context;
-
-import com.zhihu.matisse.MimeType;
-import com.zhihu.matisse.SelectionCreator;
-import com.zhihu.matisse.internal.entity.Item;
-import com.zhihu.matisse.internal.entity.IncapableCause;
-
-import java.util.Set;
+import android.content.Context
+import com.zhihu.matisse.MimeType
+import com.zhihu.matisse.internal.entity.IncapableCause
+import com.zhihu.matisse.internal.entity.Item
 
 /**
  * Filter for choosing a {@link Item}. You can add multiple Filters through
@@ -50,7 +46,7 @@ abstract class Filter {
     /**
      * Against what mime types this filter applies.
      */
-    protected abstract fun constraintTypes(): kotlin.collections.Set<MimeType>
+    protected abstract fun constraintTypes(): Set<MimeType>
 
     /**
      * Invoked for filtering each item.
