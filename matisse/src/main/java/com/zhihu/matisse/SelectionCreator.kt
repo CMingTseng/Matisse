@@ -3,17 +3,23 @@ package com.zhihu.matisse
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo.*
+import android.net.Uri
 import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.IntDef
 import androidx.annotation.RequiresApi
 import androidx.annotation.StyleRes
+import androidx.fragment.app.Fragment
 import com.zhihu.matisse.engine.ImageEngine
 import com.zhihu.matisse.filter.Filter
 import com.zhihu.matisse.internal.entity.CaptureStrategy
+import com.zhihu.matisse.internal.entity.Item
 import com.zhihu.matisse.internal.entity.SelectionSpec
+import com.zhihu.matisse.internal.loader.AlbumMediaLoader
+import com.zhihu.matisse.internal.model.SelectedItemCollection
 import com.zhihu.matisse.listener.OnCheckedListener
 import com.zhihu.matisse.listener.OnSelectedListener
+import com.zhihu.matisse.listener.SelectionDelegate
 import com.zhihu.matisse.ui.CaptureDelegateActivity
 import com.zhihu.matisse.ui.MatisseActivity
 import java.util.*
@@ -278,6 +284,73 @@ class SelectionCreator internal constructor(
     }
 
     /**
+     * 是否显示使用原图按钮，默认不显示
+     * @param show
+     * @return
+     */
+    fun showUseOrigin(show: Boolean): SelectionCreator? {
+        selectionSpec.showUseOrigin = show
+        return this
+    }
+
+    fun enablePreview(b: Boolean): SelectionCreator? {
+        selectionSpec.enablePreview = b
+        return this
+    }
+
+    /**
+     * Use case for avatar or any single selection of photo or video
+     */
+    fun allowsMultipleSelection(b: Boolean): SelectionCreator? {
+        selectionSpec.allowsMultipleSelection = b
+        return this
+    }
+
+    /**
+     * Use case for extended video, max video length or default
+     */
+    fun maxVideoLength(length: Int): SelectionCreator? {
+        selectionSpec.maxVideoLength = length
+        return this
+    }
+
+    /**
+     * Use case for extended video, is feature enabled
+     */
+    fun hasFeatureEnabled(enabled: Boolean): SelectionCreator? {
+        selectionSpec.hasFeatureEnabled = enabled
+        return this
+    }
+
+    /**
+     * Use case for extended video, is feature enabled
+     */
+    fun dontShowVideoAlert(isShown: Boolean): SelectionCreator? {
+        selectionSpec.isDontShowVideoAlert = isShown
+        return this
+    }
+
+    /**
+     * Use case for extended video, is feature enabled
+     * alertTitle: Alert Title display
+     * alertBody: Alert Body message displays
+     * alertNBtn: Alert negative button label
+     * alertPBtn: Alert positive button label
+     */
+    fun dontShowVideoAlertData(
+        alertTitle: String,
+        alertBody: String,
+        alertNBtn: String,
+        alertPBtn: String
+    ): SelectionCreator? {
+        selectionSpec.alertTitle = alertTitle
+        selectionSpec.alertBody = alertBody
+        selectionSpec.alertNBtn = alertNBtn
+        selectionSpec.alertPBtn = alertPBtn
+        return this
+    }
+
+    /**
      * Start to select media and wait for result.
      *
      * @param requestCode Identity of the request Activity or Fragment.
@@ -298,6 +371,37 @@ class SelectionCreator internal constructor(
         val activity = matisse.activity ?: return
         val intent = Intent(activity, MatisseActivity::class.java)
         launcher.launch(intent)
+    }
+
+    /**
+     * Start to select media and wait for result.
+     *
+     * @param requestCode Identity of the request Activity or Fragment.
+     */
+    fun forResult(requestCode: Int, selectedUris: List<Uri>?) {
+        val activity: Activity = matisse.activity ?: return
+        val intent = Intent(activity, MatisseActivity::class.java)
+        if (selectedUris != null && selectedUris.size > 0) {
+            val selection: ArrayList<Item> = AlbumMediaLoader.querySelection(activity, selectedUris)
+            intent.putExtra(SelectedItemCollection.STATE_SELECTION, selection)
+        }
+        val fragment: Fragment? =matisse.fragment
+        if (fragment != null) {
+            fragment.startActivityForResult(intent, requestCode)
+        } else {
+            activity.startActivityForResult(intent, requestCode)
+        }
+    }
+
+
+    /**
+     * when selection event emit register can observe
+     * @param delegate
+     * @return
+     */
+    fun delegate(delegate: SelectionDelegate): SelectionCreator? {
+        selectionSpec.delegate = delegate
+        return this
     }
 
     fun showPreview(showPreview: Boolean): SelectionCreator {

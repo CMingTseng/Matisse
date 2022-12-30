@@ -24,7 +24,7 @@ import com.zhihu.matisse.internal.entity.CaptureStrategy
 import com.zhihu.matisse.listener.OnCheckedListener
 import com.zhihu.matisse.listener.OnSelectedListener
 
-class SampleActivity : AppCompatActivity(), View.OnClickListener {
+class MatisseSampleActivity : AppCompatActivity(), View.OnClickListener {
     private var adapter: UriAdapter? = null
     private var matisse: Matisse? = null
 
@@ -45,17 +45,17 @@ class SampleActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main_o)
         findViewById<View>(R.id.zhihu).setOnClickListener(this)
         findViewById<View>(R.id.dracula).setOnClickListener(this)
         findViewById<View>(R.id.only_gif).setOnClickListener(this)
-        findViewById<View>(R.id.capture).setOnClickListener(this)
+//        findViewById<View>(R.id.capture).setOnClickListener(this)
 
         val recyclerView = findViewById<View>(R.id.recyclerview) as RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = UriAdapter().also { adapter = it }
 
-        matisse = Matisse.from(this@SampleActivity)
+        matisse = Matisse.from(this@MatisseSampleActivity)
     }
 
     override fun onClick(v: View) {
@@ -66,7 +66,7 @@ class SampleActivity : AppCompatActivity(), View.OnClickListener {
                     startAction(v)
                 } else {
                     Toast.makeText(
-                        this@SampleActivity,
+                        this@MatisseSampleActivity,
                         R.string.permission_request_denied,
                         Toast.LENGTH_LONG
                     ).show()
@@ -83,7 +83,7 @@ class SampleActivity : AppCompatActivity(), View.OnClickListener {
                     "test"
                 ), captureLauncher
             )
-            R.id.zhihu -> Matisse.from(this@SampleActivity)
+            R.id.zhihu -> Matisse.from(this@MatisseSampleActivity)
                 .choose(MimeType.ofImage(), false)
                 .countable(true)
                 .capture(true)
@@ -114,7 +114,7 @@ class SampleActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 })
                 .forResult(pickerLauncher)
-            R.id.dracula -> Matisse.from(this@SampleActivity)
+            R.id.dracula -> Matisse.from(this@MatisseSampleActivity)
                 .choose(MimeType.ofVideo())
                 .showSingleMediaType(true)
                 .theme(R.style.Matisse_Dracula)
@@ -125,7 +125,7 @@ class SampleActivity : AppCompatActivity(), View.OnClickListener {
                 .maxOriginalSize(10)
                 .imageEngine(GlideEngine())
                 .forResult(pickerLauncher)
-            R.id.only_gif -> Matisse.from(this@SampleActivity)
+            R.id.only_gif -> Matisse.from(this@MatisseSampleActivity)
                 .choose(MimeType.of(MimeType.GIF), false)
                 .countable(true)
                 .maxSelectable(9)

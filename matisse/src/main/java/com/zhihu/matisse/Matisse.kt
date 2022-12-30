@@ -9,6 +9,7 @@ import com.zhihu.matisse.internal.entity.CaptureStrategy
 import com.zhihu.matisse.ui.MatisseActivity
 import java.lang.ref.WeakReference
 
+
 /**
  * Entry for Matisse's media selection.
  */
@@ -51,6 +52,7 @@ class Matisse {
             .captureStrategy(captureStrategy)
             .forCapture(requestCode)
     }
+
 
     fun performCapture(
         captureStrategy: CaptureStrategy?,

@@ -10,9 +10,12 @@ import com.zhihu.matisse.internal.entity.SelectionSpec
 import com.zhihu.matisse.internal.ui.widget.CheckView
 import com.zhihu.matisse.internal.utils.PathUtils
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils
-import java.util.*
 
 class SelectedItemCollection(private val context: Context) {
+    enum class MaxItemReach {
+        NOT_REACH, IMAGE_REACH, VIDEO_REACH, MIX_REACH
+    }
+
     private var items: MutableSet<Item>? = null
 
     var collectionType = COLLECTION_UNDEFINED
@@ -46,6 +49,13 @@ class SelectedItemCollection(private val context: Context) {
     fun onSaveInstanceState(outState: Bundle) {
         outState.putParcelableArrayList(STATE_SELECTION, ArrayList(items!!))
         outState.putInt(STATE_COLLECTION_TYPE, collectionType)
+    }
+
+    fun getDataWithBundle_(): Bundle  {
+        val bundle = Bundle()
+        bundle.putParcelableArrayList(STATE_SELECTION, ArrayList<Item>(items))
+        bundle.putInt(STATE_COLLECTION_TYPE, collectionType)
+        return bundle
     }
 
     fun add(item: Item): Boolean {

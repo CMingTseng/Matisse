@@ -9,6 +9,7 @@ import com.zhihu.matisse.engine.impl.GlideEngine
 import com.zhihu.matisse.filter.Filter
 import com.zhihu.matisse.listener.OnCheckedListener
 import com.zhihu.matisse.listener.OnSelectedListener
+import com.zhihu.matisse.listener.SelectionDelegate
 
 object SelectionSpec {
     @StyleRes
@@ -34,7 +35,22 @@ object SelectionSpec {
     var autoHideToolbar = false
     var originalMaxSize = 0
     var onCheckedListener: OnCheckedListener? = null
+    var delegate: SelectionDelegate? = null
     var showPreview = false
+
+    var hasInited = false
+    var enablePrevieworiginalable = false
+    var autoHideToobar = false
+    var enablePreview = false
+    var allowsMultipleSelection = false
+    var showUseOrigin = false
+    var maxVideoLength = 0
+    var hasFeatureEnabled = false
+    var isDontShowVideoAlert = false
+    var alertTitle: String? = null
+    var alertBody: String? = null
+    var alertNBtn: String? = null
+    var alertPBtn: String? = null
 
     val cleanInstance: SelectionSpec
         get() = this.apply { reset() }
@@ -76,6 +92,16 @@ object SelectionSpec {
         originalable = false
         autoHideToolbar = false
         originalMaxSize = Int.MAX_VALUE
+
+        enablePreview = false
+        allowsMultipleSelection = true
+        maxVideoLength = 15
+        hasFeatureEnabled = false
+        isDontShowVideoAlert = false
+        alertTitle = "Long Video"
+        alertBody = "Video longer than %ds will be trimmed when you upload."
+        alertNBtn = "Dont Show"
+        alertPBtn = "OK"
         showPreview = true
     }
 }

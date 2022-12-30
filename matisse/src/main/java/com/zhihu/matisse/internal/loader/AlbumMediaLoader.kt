@@ -1,11 +1,14 @@
 package com.zhihu.matisse.internal.loader
 
+import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.database.MergeCursor
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.loader.content.CursorLoader
+
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.internal.entity.Album
 import com.zhihu.matisse.internal.entity.Item
@@ -40,6 +43,34 @@ class AlbumMediaLoader private constructor(
     }
 
     companion object {
+        // FIXME: 2017/8/4 0004  Could be other best way.
+        fun querySelection(context: Context, uris: List<Uri>?): ArrayList<Item> {
+            var list = ArrayList<Item>()
+            uris?.let {
+                list = ArrayList<Item>(it.size)
+                for (uri in uris) {
+                    val query: Cursor? = query(context, uri)
+                    if (query != null && query.moveToNext()) {
+                        val item = Item.valueOf(query)
+                        list.add(item)
+                        query.close()
+                    }
+                }
+            }
+            return list
+        }
+
+        private fun query(context: Context, uri: Uri): Cursor? {
+            return context.contentResolver
+                .query(
+                    QUERY_URI,
+                    PROJECTION,
+                    MediaStore.Files.FileColumns._ID + "=?",
+                    arrayOf(ContentUris.parseId(uri).toString()),
+                    ORDER_BY
+                )
+        }
+
         private val QUERY_URI = MediaStore.Files.getContentUri("external")
         private val PROJECTION = arrayOf(
             MediaStore.Files.FileColumns._ID,

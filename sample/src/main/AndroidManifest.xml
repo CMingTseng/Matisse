@@ -7,8 +7,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+<!--        android:name="com.zhihu.matisse.sample.CustomMatisseActivity"-->
+<!--        android:name="com.zhihu.matisse.sample.MatisseSampleActivity"-->
+<!--        android:name="com.zhihu.matisse.sample.SampleActivity"-->
         <activity
-            android:name="com.zhihu.matisse.sample.SampleActivity"
+            android:name="com.zhihu.matisse.sample.CustomMatisseActivity"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
