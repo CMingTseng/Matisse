@@ -20,8 +20,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.squareup.picasso.Picasso;
 import com.zhihu.matisse.engine.ImageEngine;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * {@link ImageEngine} implementation using Picasso.
@@ -57,5 +61,10 @@ public class PicassoEngine implements ImageEngine {
     @Override
     public boolean supportAnimatedGif() {
         return false;
+    }
+
+    @Override
+    public void loadLargeImage(@NonNull Context context, int resizeX, int resizeY, @NonNull SubsamplingScaleImageView imageView, @Nullable Uri uri) {
+
     }
 }

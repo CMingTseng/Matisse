@@ -17,8 +17,8 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-//apply plugin: 'kotlin-parcelize'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
+//apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'checkstyle'
 
@@ -45,9 +45,9 @@ android {
     kapt {
         correctErrorTypes = true
     }
-    androidExtensions {
-        experimental = true
-    }
+//    androidExtensions {
+//        experimental = true
+//    }
 }
 
 dependencies {
