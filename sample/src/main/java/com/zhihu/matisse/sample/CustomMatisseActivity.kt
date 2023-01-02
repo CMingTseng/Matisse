@@ -30,6 +30,9 @@ import android.view.View
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.filter.Filter
 import com.zhihu.matisse.internal.entity.Item
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.lang.IllegalStateException
 
@@ -51,7 +54,7 @@ class CustomMatisseActivity : AppCompatActivity(), View.OnClickListener, Selecti
             val resultTextView = findViewById<View>(R.id.tv_result) as TextView
             resultTextView.text = ""
             mSelectedUris = Matisse.obtainResult(data)
-            mSelectedUris?.let { its ->
+            Matisse.obtainResult(data)?.let { its ->
                 for (uri in its) {
                     val or = getExifOrientation(this@CustomMatisseActivity, uri)
                     resultTextView.append(uri.toString())
@@ -65,11 +68,13 @@ class CustomMatisseActivity : AppCompatActivity(), View.OnClickListener, Selecti
             pathTextView.text = ""
             Matisse.obtainPathResult(data)?.let { pathResult ->
                 for (path in pathResult) {
+//                    GlobalScope.launch(Dispatchers.IO) {
+//                        VideoFrameExtractor
+//                    }
                     pathTextView.append(path)
                     pathTextView.append("\n")
                 }
             }
-
         }
     }
 
