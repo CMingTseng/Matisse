@@ -5,6 +5,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_SELECTION
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_SELECTION_PATH
+import com.zhihu.matisse.Matisse.Companion.REQUEST_CODE_CAPTURE
 import com.zhihu.matisse.R
 import com.zhihu.matisse.internal.entity.SelectionSpec
 import com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter.OnPhotoCapture
@@ -50,16 +53,16 @@ class CaptureDelegateActivity : AppCompatActivity(), OnPhotoCapture {
             finish()
             return
         }
-        if (requestCode == MatisseActivity.REQUEST_CODE_CAPTURE) {
+        if (requestCode ==  REQUEST_CODE_CAPTURE) {
             // Just pass the data back to previous calling Activity.
             val contentUri = mediaStoreCompat!!.currentPhotoUri!!
             val path = mediaStoreCompat!!.currentPhotoPath!!
             val selected = arrayListOf(contentUri)
             val selectedPath = arrayListOf(path)
             val result = Intent()
-            result.putParcelableArrayListExtra(MatisseActivity.EXTRA_RESULT_SELECTION, selected)
+            result.putParcelableArrayListExtra( EXTRA_RESULT_SELECTION, selected)
             result.putStringArrayListExtra(
-                MatisseActivity.EXTRA_RESULT_SELECTION_PATH,
+                EXTRA_RESULT_SELECTION_PATH,
                 selectedPath
             )
             setResult(RESULT_OK, result)
@@ -77,7 +80,7 @@ class CaptureDelegateActivity : AppCompatActivity(), OnPhotoCapture {
 
     override fun capture() {
         if (mediaStoreCompat != null) {
-            mediaStoreCompat!!.dispatchCaptureIntent(this, MatisseActivity.REQUEST_CODE_CAPTURE)
+            mediaStoreCompat!!.dispatchCaptureIntent(this,  REQUEST_CODE_CAPTURE)
         }
     }
 }

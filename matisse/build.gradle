@@ -18,7 +18,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
-//apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'checkstyle'
 
@@ -28,6 +27,9 @@ android {
     buildToolsVersion "30.0.3"
     lintOptions {
         abortOnError false
+    }
+    buildFeatures {
+        viewBinding true
     }
     defaultConfig {
         minSdkVersion 14
@@ -45,9 +47,6 @@ android {
     kapt {
         correctErrorTypes = true
     }
-//    androidExtensions {
-//        experimental = true
-//    }
 }
 
 dependencies {

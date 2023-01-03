@@ -17,7 +17,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
-//apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -26,6 +25,9 @@ android {
     lintOptions {
         abortOnError false
         disable 'MissingDefaultResource'
+    }
+    buildFeatures {
+        viewBinding true
     }
     defaultConfig {
         applicationId 'com.zhihu.matisse.sample'
@@ -48,9 +50,6 @@ android {
     kapt {
         correctErrorTypes = true
     }
-//    androidExtensions {
-//        experimental = true
-//    }
 }
 
 dependencies {

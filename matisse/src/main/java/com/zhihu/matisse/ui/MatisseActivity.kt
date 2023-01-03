@@ -22,6 +22,11 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import com.zhihu.matisse.Matisse.Companion.CHECK_STATE
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_ORIGINAL_ENABLE
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_SELECTION
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_SELECTION_PATH
+import com.zhihu.matisse.Matisse.Companion.REQUEST_CODE_CAPTURE
 import com.zhihu.matisse.R
 import com.zhihu.matisse.internal.entity.Album
 import com.zhihu.matisse.internal.entity.Item
@@ -389,11 +394,5 @@ class MatisseActivity : AppCompatActivity(), AlbumCallbacks,
         }
     }
 
-    companion object {
-        const val EXTRA_RESULT_SELECTION = "extra_result_selection"
-        const val EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path"
-        const val EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable"
-        const val CHECK_STATE = "checkState"
-        const val REQUEST_CODE_CAPTURE = 24
-    }
+
 }

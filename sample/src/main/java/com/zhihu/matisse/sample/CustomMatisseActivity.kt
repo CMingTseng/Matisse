@@ -27,11 +27,14 @@ import android.media.ExifInterface
 import android.net.Uri
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.filter.Filter
 import com.zhihu.matisse.internal.entity.Item
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import com.zhihu.matisse.sample.databinding.ActivityCustomMatisseBinding
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.lang.IllegalStateException
@@ -40,40 +43,46 @@ import java.lang.IllegalStateException
  * Custom Matisse
  */
 class CustomMatisseActivity : AppCompatActivity(), View.OnClickListener, SelectionDelegate {
+    private lateinit var binding: ActivityCustomMatisseBinding
+    private lateinit var vm: CustomMatisseViewModel
     private var mSelectedUris: List<Uri>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_custom_matisse)
-        findViewById<View>(R.id.btn_go).setOnClickListener(this)
+        binding = ActivityCustomMatisseBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        vm = ViewModelProvider(this).get(CustomMatisseViewModel::class.java)
+
+        binding.btnGo.setOnClickListener(this)
+        vm.results.observe(this ) {its->
+            binding.tvResult.text = ""
+            mSelectedUris=its
+            for (uri in its) {
+                val or = getExifOrientation(this@CustomMatisseActivity, uri)
+                binding.tvResult.append(uri.toString())
+                binding.tvResult.append("\n")
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            binding.tvPathResult.text = ""
+            vm.resultFlow.collect {pathResult->
+                // Use absolute path result
+                for (path in pathResult) {
+//                    GlobalScope.launch(Dispatchers.IO) {
+//                        VideoFrameExtractor
+//                    }
+                    binding.tvPathResult.append(path)
+                    binding.tvPathResult.append("\n")
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-            // Use Uri result
-            val resultTextView = findViewById<View>(R.id.tv_result) as TextView
-            resultTextView.text = ""
-            mSelectedUris = Matisse.obtainResult(data)
-            Matisse.obtainResult(data)?.let { its ->
-                for (uri in its) {
-                    val or = getExifOrientation(this@CustomMatisseActivity, uri)
-                    resultTextView.append(uri.toString())
-                    resultTextView.append("\n")
-                }
-            }
-
-
-            // Use absolute path result
-            val pathTextView = findViewById<View>(R.id.tv_path_result) as TextView
-            pathTextView.text = ""
-            Matisse.obtainPathResult(data)?.let { pathResult ->
-                for (path in pathResult) {
-//                    GlobalScope.launch(Dispatchers.IO) {
-//                        VideoFrameExtractor
-//                    }
-                    pathTextView.append(path)
-                    pathTextView.append("\n")
-                }
+            data?.let {
+                vm.process(it)
             }
         }
     }

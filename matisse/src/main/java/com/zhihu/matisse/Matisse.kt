@@ -6,7 +6,6 @@ import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import com.zhihu.matisse.internal.entity.CaptureStrategy
-import com.zhihu.matisse.ui.MatisseActivity
 import java.lang.ref.WeakReference
 
 
@@ -64,6 +63,11 @@ class Matisse {
     }
 
     companion object {
+        const val EXTRA_RESULT_SELECTION = "extra_result_selection"
+        const val EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path"
+        const val EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable"
+        const val CHECK_STATE = "checkState"
+        const val REQUEST_CODE_CAPTURE = 24
         /**
          * Start Matisse from an Activity.
          *
@@ -100,7 +104,7 @@ class Matisse {
          * @return User selected media' [Uri] list.
          */
         fun obtainResult(data: Intent?): List<Uri>? {
-            return data?.getParcelableArrayListExtra(MatisseActivity.EXTRA_RESULT_SELECTION)
+            return data?.getParcelableArrayListExtra( EXTRA_RESULT_SELECTION)
         }
 
         /**
@@ -111,7 +115,7 @@ class Matisse {
          * @return User selected media path list.
          */
         fun obtainPathResult(data: Intent?): List<String>? {
-            return data?.getStringArrayListExtra(MatisseActivity.EXTRA_RESULT_SELECTION_PATH)
+            return data?.getStringArrayListExtra( EXTRA_RESULT_SELECTION_PATH)
         }
 
         /**
@@ -122,7 +126,7 @@ class Matisse {
          * @return Whether use original photo
          */
         fun obtainOriginalState(data: Intent?): Boolean {
-            return data?.getBooleanExtra(MatisseActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+            return data?.getBooleanExtra( EXTRA_RESULT_ORIGINAL_ENABLE, false)
                 ?: false
         }
     }
