@@ -21,9 +21,8 @@ class CustomMatisseViewModel : ViewModel() {
     private var _resultFlow: MutableStateFlow<List<String>> = MutableStateFlow(mutableListOf())
     val resultFlow: StateFlow<List<String>> = _resultFlow
 
-    private var _videoTypeFramesresultFlow: MutableStateFlow<List<String>> =
-        MutableStateFlow(mutableListOf())
-    val videoTypeFramesresultFlow: StateFlow<List<String>> = _videoTypeFramesresultFlow
+    private var _videoTypeFramesresultFlow: MutableStateFlow< List<String> > = MutableStateFlow(mutableListOf())
+    val videoTypeFramesresultFlow: StateFlow< List<String> > = _videoTypeFramesresultFlow
 
     fun process(data: Intent) {
         Matisse.apply {
@@ -40,17 +39,24 @@ class CustomMatisseViewModel : ViewModel() {
         save_path: String,
         sources: List<String>,
         save_image_type: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-        quality: Int = 100,
-        per_sec: Long = 5000L
+        quality: Int = 100
+
     ) {
+        //FIXME here check Video Size to define per_sec cut sec.
+        val per_sec: Long = 3000L
         val extractor = VideoFrameExtractor.getExtractor()
         for (source in sources) {
             viewModelScope.launch {
-                extractor.filepaths.collect {
-                    Log.e("CustomMatisseViewModel", "Show get extract path : $it")
-                }
                 extractor.extractFramesToFile(save_path, source, per_sec, save_image_type, quality)
+                extractor.filepaths.collect { result->
+                    val results   = mutableListOf< String >()
+                    results.addAll(_videoTypeFramesresultFlow.value )
+                    result?.let{
+                        results.add(it)
+                    }
+                    _videoTypeFramesresultFlow.value = results
+                    Log.e("CustomMatisseViewModel", "Show get extract path : $result")
+                }
             }
-        }
-    }
+        }}
 }

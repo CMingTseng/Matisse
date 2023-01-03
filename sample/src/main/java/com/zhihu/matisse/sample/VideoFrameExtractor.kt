@@ -40,24 +40,23 @@ class VideoFrameExtractor {
         quality: Int = 100
     ) {
         workscope.launch {
-            //FIXME  extractFrames not work
-            extractFrames(videoUrl, per_sec).flatMapConcat { bitmap ->
-                Log.e("VideoFrameExtractor", "Show extractFramesToFile flatMapConcat : $bitmap")
+            //FIXME How merge or combine or zip extractFrames & extractBitmapToFile flow
+            extractFrames(videoUrl, per_sec).collect { bitmap ->
                 if (bitmap != null) {
                     extractBitmapToFile(
                         bitmap,
                         type = save_image_type,
                         quality = quality,
                         path = save_path
-                    )
+                    ).collect {
+                        _filepaths.emit(it)
+                    }
                 } else {
+                    //FIXME
                     flow {
                         emit(null)
                     }
                 }
-            }.collect {
-                Log.e("VideoFrameExtractor", "Show extract path : $it")
-                _filepaths.emit(it)
             }
         }
     }
@@ -67,30 +66,37 @@ class VideoFrameExtractor {
         MediaMetadataRetriever().apply {
             setDataSource(videoUrl)
             extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.let {
-                var duration = it.toLong()
-                var millsecPerThumbnail: Long = 3000
-                if (duration <= 20 * 1000) {
-                    millsecPerThumbnail = 1000
-                } else if (duration > 60 * 1000) {
-                    millsecPerThumbnail = 5000
-                }
-                val thumbnailCount =
-                    Math.ceil((duration * 1f / millsecPerThumbnail).toDouble()).toInt()
-                var millSec = 0L
-                for (i in 0 until thumbnailCount) {
-                    if (millSec > duration) {
-                        millSec = duration
-                    }
-                    //                    thumbnailMillSecList.add(millSec)
-                    Log.d("VideoFrameExtractor", "getThumbnail()  [\$i] time:\$millSec")
-                    val bitmap = getFrameAtTime(
-                        TimeUnit.MICROSECONDS.convert(
-                            millSec,
-                            TimeUnit.MILLISECONDS
-                        )
-                    )
+                Log.e("VideoFrameExtractor", "extractMetadata")
+//                var duration = it.toLong()
+//                var millsecPerThumbnail: Long = 3000
+//                if (duration <= 20 * 1000) {
+//                    millsecPerThumbnail = 1000
+//                } else if (duration > 60 * 1000) {
+//                    millsecPerThumbnail = 5000
+//                }
+//                val thumbnailCount =
+//                    Math.ceil((duration * 1f / millsecPerThumbnail).toDouble()).toInt()
+//                var millSec = 0L
+//                for (i in 0 until thumbnailCount) {
+//                    if (millSec > duration) {
+//                        millSec = duration
+//                    }
+//                    //                    thumbnailMillSecList.add(millSec)
+//                    Log.e("VideoFrameExtractor", "getThumbnail()  [$i] time:$millSec")
+//                    val bitmap = getFrameAtTime(
+//                        TimeUnit.MICROSECONDS.convert(
+//                            millSec,
+//                            TimeUnit.MILLISECONDS
+//                        )
+//                    )
+//                    emit(bitmap)
+//                    millSec += millsecPerThumbnail
+//                }
+                val videoDuration = it.toLong()
+                for (time in 0L until videoDuration step per_sec) {
+//                    val bitmap = getFrameAtTime(time * 1000, MediaMetadataRetriever.OPTION_CLOSEST)
+                    val bitmap = getFrameAtTime(time * 1000)
                     emit(bitmap)
-                    millSec += millsecPerThumbnail
                 }
             }
         }

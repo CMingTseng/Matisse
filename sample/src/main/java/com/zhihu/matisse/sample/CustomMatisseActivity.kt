@@ -73,6 +73,11 @@ class CustomMatisseActivity : AppCompatActivity(), View.OnClickListener, Selecti
                 vm.processVideoFrames(cache.absolutePath, pathResult)
             }
         }
+        lifecycleScope.launchWhenStarted {
+            vm.videoTypeFramesresultFlow.collect { save_paths->
+                Log.e("CustomMatisseActivity","Show save $save_paths")
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
