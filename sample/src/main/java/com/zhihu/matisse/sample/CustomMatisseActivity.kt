@@ -51,29 +51,26 @@ class CustomMatisseActivity : AppCompatActivity(), View.OnClickListener, Selecti
         binding = ActivityCustomMatisseBinding.inflate(layoutInflater)
         setContentView(binding.root)
         vm = ViewModelProvider(this).get(CustomMatisseViewModel::class.java)
-
         binding.btnGo.setOnClickListener(this)
-        vm.results.observe(this ) {its->
+        vm.results.observe(this) { its ->
             binding.tvResult.text = ""
-            mSelectedUris=its
+            mSelectedUris = its
             for (uri in its) {
                 val or = getExifOrientation(this@CustomMatisseActivity, uri)
                 binding.tvResult.append(uri.toString())
                 binding.tvResult.append("\n")
             }
         }
-
+        val cache = this.cacheDir
         lifecycleScope.launchWhenStarted {
             binding.tvPathResult.text = ""
-            vm.resultFlow.collect {pathResult->
+            vm.resultFlow.collect { pathResult ->
                 // Use absolute path result
                 for (path in pathResult) {
-//                    GlobalScope.launch(Dispatchers.IO) {
-//                        VideoFrameExtractor
-//                    }
                     binding.tvPathResult.append(path)
                     binding.tvPathResult.append("\n")
                 }
+                vm.processVideoFrames(cache.absolutePath, pathResult)
             }
         }
     }
