@@ -1,4 +1,4 @@
-package com.zhihu.matisse.sample;
+package com.zhihu.matisse.engine.impl;
 
 import android.content.Context;
 import android.graphics.Bitmap;

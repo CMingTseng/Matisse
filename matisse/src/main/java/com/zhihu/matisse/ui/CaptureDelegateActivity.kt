@@ -1,7 +1,6 @@
 package com.zhihu.matisse.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -13,8 +12,6 @@ import com.zhihu.matisse.internal.entity.SelectionSpec
 import com.zhihu.matisse.internal.ui.adapter.AlbumMediaAdapter.OnPhotoCapture
 import com.zhihu.matisse.internal.utils.MediaStoreCompat
 import com.zhihu.matisse.internal.utils.SingleMediaScanner
-import java.util.*
-
 /**
  * Main Activity to display albums and media content (images/videos) in each album
  * and also support media selecting operations.

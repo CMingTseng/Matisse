@@ -10,6 +10,7 @@ import com.zhihu.matisse.internal.entity.SelectionSpec
 import com.zhihu.matisse.internal.ui.widget.CheckView
 import com.zhihu.matisse.internal.utils.PathUtils
 import com.zhihu.matisse.internal.utils.PhotoMetadataUtils
+import java.util.*
 
 class SelectedItemCollection(private val context: Context) {
     enum class MaxItemReach {

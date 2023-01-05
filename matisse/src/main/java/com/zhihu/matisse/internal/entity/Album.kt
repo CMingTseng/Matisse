@@ -6,8 +6,7 @@ import android.net.Uri
 import android.os.Parcelable
 import com.zhihu.matisse.R
 import com.zhihu.matisse.internal.loader.AlbumLoader
-import kotlinx.android.parcel.Parcelize
-//import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 class Album(

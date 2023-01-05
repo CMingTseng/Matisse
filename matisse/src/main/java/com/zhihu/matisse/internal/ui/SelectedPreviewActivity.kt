@@ -1,6 +1,7 @@
 package com.zhihu.matisse.internal.ui
 
 import android.os.Bundle
+import com.zhihu.matisse.Matisse.Companion.EXTRA_DEFAULT_BUNDLE
 import com.zhihu.matisse.internal.entity.Item
 import com.zhihu.matisse.internal.entity.SelectionSpec
 import com.zhihu.matisse.internal.model.SelectedItemCollection

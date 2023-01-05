@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import com.zhihu.matisse.internal.entity.CaptureStrategy
 import java.lang.ref.WeakReference
 
-
 /**
  * Entry for Matisse's media selection.
  */
@@ -52,7 +51,6 @@ class Matisse {
             .forCapture(requestCode)
     }
 
-
     fun performCapture(
         captureStrategy: CaptureStrategy?,
         launcher: ActivityResultLauncher<Intent>
@@ -66,8 +64,12 @@ class Matisse {
         const val EXTRA_RESULT_SELECTION = "extra_result_selection"
         const val EXTRA_RESULT_SELECTION_PATH = "extra_result_selection_path"
         const val EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable"
-        const val CHECK_STATE = "checkState"
         const val REQUEST_CODE_CAPTURE = 24
+        const val EXTRA_DEFAULT_BUNDLE = "extra_default_bundle"
+        const val EXTRA_RESULT_BUNDLE = "extra_result_bundle"
+        const val EXTRA_RESULT_APPLY = "extra_result_apply"
+        const val CHECK_STATE = "checkState"
+
         /**
          * Start Matisse from an Activity.
          *
@@ -104,7 +106,7 @@ class Matisse {
          * @return User selected media' [Uri] list.
          */
         fun obtainResult(data: Intent?): List<Uri>? {
-            return data?.getParcelableArrayListExtra( EXTRA_RESULT_SELECTION)
+            return data?.getParcelableArrayListExtra(EXTRA_RESULT_SELECTION)
         }
 
         /**
@@ -115,7 +117,7 @@ class Matisse {
          * @return User selected media path list.
          */
         fun obtainPathResult(data: Intent?): List<String>? {
-            return data?.getStringArrayListExtra( EXTRA_RESULT_SELECTION_PATH)
+            return data?.getStringArrayListExtra(EXTRA_RESULT_SELECTION_PATH)
         }
 
         /**
@@ -126,7 +128,7 @@ class Matisse {
          * @return Whether use original photo
          */
         fun obtainOriginalState(data: Intent?): Boolean {
-            return data?.getBooleanExtra( EXTRA_RESULT_ORIGINAL_ENABLE, false)
+            return data?.getBooleanExtra(EXTRA_RESULT_ORIGINAL_ENABLE, false)
                 ?: false
         }
     }

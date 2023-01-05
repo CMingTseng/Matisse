@@ -16,7 +16,9 @@
         </intent>
     </queries>
 
-    <application>
+    <application
+        android:requestLegacyExternalStorage="true"
+        >
         <activity
             android:name="com.zhihu.matisse.ui.CaptureDelegateActivity"
             android:theme="@style/Matisse.TransparentTheme" />

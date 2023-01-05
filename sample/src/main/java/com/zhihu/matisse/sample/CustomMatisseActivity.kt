@@ -31,11 +31,11 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.zhihu.matisse.MimeType
+import com.zhihu.matisse.engine.impl.UILEngine
 import com.zhihu.matisse.filter.Filter
 import com.zhihu.matisse.internal.entity.Item
 import com.zhihu.matisse.sample.databinding.ActivityCustomMatisseBinding
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.lang.IllegalStateException
 
@@ -52,18 +52,19 @@ class CustomMatisseActivity : AppCompatActivity(), View.OnClickListener, Selecti
         setContentView(binding.root)
         vm = ViewModelProvider(this).get(CustomMatisseViewModel::class.java)
         binding.btnGo.setOnClickListener(this)
-        vm.results.observe(this) { its ->
-            binding.tvResult.text = ""
-            mSelectedUris = its
-            for (uri in its) {
-                val or = getExifOrientation(this@CustomMatisseActivity, uri)
-                binding.tvResult.append(uri.toString())
-                binding.tvResult.append("\n")
+        vm.results.observe(this, object : Observer<List<Uri>> {
+            override fun onChanged(its: List<Uri>) {
+                binding.tvResult.text = ""
+                mSelectedUris = its
+                for (uri in its) {
+                    val or = getExifOrientation(this@CustomMatisseActivity, uri)
+                    binding.tvResult.append(uri.toString())
+                    binding.tvResult.append("\n")
+                }
             }
-        }
+        })
         val cache = this.cacheDir
         lifecycleScope.launchWhenStarted {
-            binding.tvPathResult.text = ""
             vm.resultFlow.collect { pathResult ->
                 // Use absolute path result
                 for (path in pathResult) {
@@ -74,8 +75,8 @@ class CustomMatisseActivity : AppCompatActivity(), View.OnClickListener, Selecti
             }
         }
         lifecycleScope.launchWhenStarted {
-            vm.videoTypeFramesresultFlow.collect { save_paths->
-                Log.e("CustomMatisseActivity","Show save $save_paths")
+            vm.videoTypeFramesresultFlow.collect { save_paths ->
+                Log.e("CustomMatisseActivity", "Show save $save_paths")
             }
         }
     }
@@ -119,8 +120,7 @@ class CustomMatisseActivity : AppCompatActivity(), View.OnClickListener, Selecti
         val selectVideoCountEditor = findViewById<View>(R.id.et_video_selectable_count) as EditText
         val countableCheckBox = findViewById<View>(R.id.cb_countable) as CheckBox
         val captureCheckBox = findViewById<View>(R.id.cb_capture) as CheckBox
-        val mimeTypes: Set<MimeType>
-        mimeTypes = if (imageCheckBox.isChecked && videoCheckBox.isChecked) {
+        val mimeTypes: Set<MimeType> = if (imageCheckBox.isChecked && videoCheckBox.isChecked) {
             MimeType.ofAll()
         } else if (imageCheckBox.isChecked) {
             MimeType.ofImage()

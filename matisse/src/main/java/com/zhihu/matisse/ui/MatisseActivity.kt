@@ -23,6 +23,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.zhihu.matisse.Matisse.Companion.CHECK_STATE
+import com.zhihu.matisse.Matisse.Companion.EXTRA_DEFAULT_BUNDLE
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_APPLY
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_BUNDLE
 import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_ORIGINAL_ENABLE
 import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_SELECTION
 import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_SELECTION_PATH
@@ -35,7 +38,6 @@ import com.zhihu.matisse.internal.model.AlbumCollection
 import com.zhihu.matisse.internal.model.AlbumCollection.AlbumCallbacks
 import com.zhihu.matisse.internal.model.SelectedItemCollection
 import com.zhihu.matisse.internal.ui.AlbumPreviewActivity
-import com.zhihu.matisse.internal.ui.BasePreviewActivity
 import com.zhihu.matisse.internal.ui.MediaSelectionFragment
 import com.zhihu.matisse.internal.ui.MediaSelectionFragment.SelectionProvider
 import com.zhihu.matisse.internal.ui.SelectedPreviewActivity
@@ -248,18 +250,18 @@ class MatisseActivity : AppCompatActivity(), AlbumCallbacks,
                 return@ActivityResultCallback
             }
             val data = activityResult.data ?: return@ActivityResultCallback
-            val resultBundle = data.getBundleExtra(BasePreviewActivity.EXTRA_RESULT_BUNDLE)
+            val resultBundle = data.getBundleExtra(EXTRA_RESULT_BUNDLE)
                 ?: return@ActivityResultCallback
             val selected: List<Item> =
                 resultBundle.getParcelableArrayList(SelectedItemCollection.STATE_SELECTION)
                     ?: emptyList()
             originalEnable =
-                data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, false)
+                data.getBooleanExtra(EXTRA_RESULT_ORIGINAL_ENABLE, false)
             val collectionType = resultBundle.getInt(
                 SelectedItemCollection.STATE_COLLECTION_TYPE,
                 SelectedItemCollection.COLLECTION_UNDEFINED
             )
-            if (data.getBooleanExtra(BasePreviewActivity.EXTRA_RESULT_APPLY, false)) {
+            if (data.getBooleanExtra(EXTRA_RESULT_APPLY, false)) {
                 val result = Intent()
                 val selectedUris = ArrayList<Uri>()
                 val selectedPaths = ArrayList<String>()
@@ -288,10 +290,10 @@ class MatisseActivity : AppCompatActivity(), AlbumCallbacks,
         if (v.id == R.id.button_preview) {
             val intent = Intent(this, SelectedPreviewActivity::class.java)
             intent.putExtra(
-                BasePreviewActivity.EXTRA_DEFAULT_BUNDLE,
+                EXTRA_DEFAULT_BUNDLE,
                 selectedCollection.dataWithBundle
             )
-            intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, originalEnable)
+            intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, originalEnable)
             previewLauncher.launch(intent)
         } else if (v.id == R.id.button_apply) {
             val result = Intent()
@@ -377,10 +379,10 @@ class MatisseActivity : AppCompatActivity(), AlbumCallbacks,
         intent.putExtra(AlbumPreviewActivity.EXTRA_ALBUM, album)
         intent.putExtra(AlbumPreviewActivity.EXTRA_ITEM, item)
         intent.putExtra(
-            BasePreviewActivity.EXTRA_DEFAULT_BUNDLE,
+            EXTRA_DEFAULT_BUNDLE,
             selectedCollection.dataWithBundle
         )
-        intent.putExtra(BasePreviewActivity.EXTRA_RESULT_ORIGINAL_ENABLE, originalEnable)
+        intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, originalEnable)
         previewLauncher.launch(intent)
     }
 
@@ -393,6 +395,4 @@ class MatisseActivity : AppCompatActivity(), AlbumCallbacks,
             mediaStoreCompat!!.dispatchCaptureIntent(this, REQUEST_CODE_CAPTURE)
         }
     }
-
-
 }

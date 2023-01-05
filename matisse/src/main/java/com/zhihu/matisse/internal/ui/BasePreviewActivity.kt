@@ -11,6 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import com.zhihu.matisse.Matisse.Companion.CHECK_STATE
+import com.zhihu.matisse.Matisse.Companion.EXTRA_DEFAULT_BUNDLE
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_APPLY
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_BUNDLE
+import com.zhihu.matisse.Matisse.Companion.EXTRA_RESULT_ORIGINAL_ENABLE
 import com.zhihu.matisse.R
 import com.zhihu.matisse.internal.entity.IncapableCause
 import com.zhihu.matisse.internal.entity.Item
@@ -293,13 +298,5 @@ abstract class BasePreviewActivity : AppCompatActivity(),
         val cause: IncapableCause? = selectedCollection.isAcceptable(item)
         IncapableCause.handleCause(this, cause)
         return cause == null
-    }
-
-    companion object {
-        const val EXTRA_DEFAULT_BUNDLE = "extra_default_bundle"
-        const val EXTRA_RESULT_BUNDLE = "extra_result_bundle"
-        const val EXTRA_RESULT_APPLY = "extra_result_apply"
-        const val EXTRA_RESULT_ORIGINAL_ENABLE = "extra_result_original_enable"
-        const val CHECK_STATE = "checkState"
     }
 }
